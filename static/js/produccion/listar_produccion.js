@@ -57,8 +57,7 @@ document.getElementById("btnBuscarProduccion").addEventListener("click", functio
                 cuerpo.innerHTML += `
                     <tr>
                         <td>${p.dni}</td>
-                        <td>${p.nombres}</td>
-                        <td>${p.apellidos}</td>
+                        <td>${p.nombres} ${p.apellidos}</td>
                         <td>${p.cargo ?? ""}</td>
                         <td>${p.horas_trabajadas} h</td>
                         <td>${horasExtraTexto}</td>

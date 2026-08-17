@@ -12,7 +12,7 @@ def vista_produccion():
         return redirect(url_for("usuario.login"))
     if session.get("rol") != "admin":
         return "No autorizado", 403
-    return render_template("produccion.html")
+    return render_template("produccion/index.html")
 
 
 produccion_bp.route("/api/produccion", methods=["GET"])(obtener_resumen_produccion)

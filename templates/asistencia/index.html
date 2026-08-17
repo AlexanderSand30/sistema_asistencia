@@ -1,0 +1,315 @@
+{% extends "layouts/side-menu.html" %}
+
+{% block content %}
+
+<div>
+    <!-- CABECERA -->
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <div class="asistencia-icon">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <h4 class="mb-0 fw-bold">Módulo de Asistencia</h4>
+        </div>
+        <p class="text-muted mb-0">
+            Control y registro de asistencia de trabajadores
+        </p>
+    </div>
+
+    <!-- BUSCAR TRABAJADOR -->
+    <div class="card card-soft mb-4">
+        <div class="card-body p-4">
+
+            <div class="section-title mb-3">
+                <div class="section-title-icon">
+                    <i class="bi bi-person-vcard"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">Buscar trabajador</h6>
+                    <small class="text-muted">
+                        Ingrese el DNI para consultar los datos
+                    </small>
+                </div>
+            </div>
+
+            <div class="row g-2 align-items-end">
+                <div class="col-md-5 col-lg-4">
+                    <label for="dniBuscar" class="form-label">DNI</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-person"></i>
+                        </span>
+                        <input type="text" id="dniBuscar" class="form-control" maxlength="8" inputmode="numeric" placeholder="Ingrese DNI" />
+                    </div>
+                </div>
+
+                <div class="col-md-auto">
+                    <button class="btn btn-primary btn-asistencia" id="btnBuscar">
+                        <i class="bi bi-search me-1"></i>
+                        Buscar trabajador
+                    </button>
+                </div>
+            </div>
+
+            <!-- DATOS DEL TRABAJADOR -->
+            <div id="datosTrabajador" class="trabajador-panel mt-4 d-none">
+                <div class="trabajador-panel-header">
+                    <div>
+                        <span class="badge bg-success-subtle text-success">
+                            <i class="bi bi-check-circle me-1"></i>
+                            Trabajador encontrado
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-1">
+                    <div class="col-md-3">
+                        <label for="infoDni" class="form-label">DNI</label>
+                        <input type="text" id="infoDni" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="infoNombres" class="form-label">Nombres</label>
+                        <input type="text" id="infoNombres" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-5">
+                        <label for="infoApellidos" class="form-label">Apellidos</label>
+                        <input type="text" id="infoApellidos" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="infoObra" class="form-label">Obra</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-building"></i>
+                            </span>
+                            <input type="text" id="infoObra" class="form-control" placeholder="Ingrese nombre de la obra" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="infoCargo" class="form-label">Cargo</label>
+                        <input type="text" id="infoCargo" class="form-control" readonly />
+                    </div>
+
+                </div>
+
+                <input type="hidden" id="infoTrabajadorId" />
+
+                <div class="trabajador-actions mt-4">
+                    <button class="btn btn-success btn-asistencia" id="btnRegistrar">
+                        <i class="bi bi-camera-fill me-1"></i>
+                        Registrar asistencia
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="card card-soft mb-4">
+        <div class="card-body p-4">
+
+            <div class="section-title mb-3">
+                <div class="section-title-icon filter-icon">
+                    <i class="bi bi-funnel"></i>
+                </div>
+
+                <div>
+                    <h6 class="mb-0 fw-bold">Filtrar asistencias</h6>
+                    <small class="text-muted">
+                        Consulte los registros por rango de fechas
+                    </small>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-end">
+
+                <div class="col-sm-6 col-md-3">
+                    <label for="filtroFechaInicio" class="form-label">
+                        Desde
+                    </label>
+                    <input type="date" id="filtroFechaInicio" class="form-control" />
+                </div>
+
+                <div class="col-sm-6 col-md-3">
+                    <label for="filtroFechaFin" class="form-label">
+                        Hasta
+                    </label>
+                    <input type="date" id="filtroFechaFin" class="form-control" />
+                </div>
+
+                <div class="col-sm-6 col-md-auto">
+                    <button class="btn btn-primary btn-asistencia" id="btnFiltrar">
+                        <i class="bi bi-funnel-fill me-1"></i>
+                        Filtrar
+                    </button>
+                </div>
+
+                <div class="col-sm-6 col-md-auto">
+                    <button class="btn btn-light border btn-asistencia" id="btnHoy">
+                        <i class="bi bi-calendar-day me-1"></i>
+                        Hoy
+                    </button>
+                </div>
+
+                <div class="col-sm-6 col-md-auto">
+                    <button class="btn btn-light border btn-asistencia" id="btnVerTodos">
+                        <i class="bi bi-list-ul me-1"></i>
+                        Ver todos
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card card-soft">
+
+        <div class="card-header tabla-header">
+            <div>
+                <h6 class="mb-0 fw-bold">
+                    <i class="bi bi-clock-history me-2"></i>
+                    Registro de asistencias
+                </h6>
+                <small class="text-muted">
+                    Historial de entradas y salidas
+                </small>
+            </div>
+        </div>
+
+        <div class="table-responsive overflow-x-auto">
+            <table class="table table-hover asistencia-table mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>DNI</th>
+                        <th>Trabajador</th>
+                        <th>Obra</th>
+                        <th>Cargo</th>
+                        <th>Fecha</th>
+                        <th>Entrada</th>
+                        <th>Salida</th>
+                        <th>Estado</th>
+                        <th class="text-center">Fotos</th>
+                        <th class="text-center">Ubicación</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="cuerpoTablaAsistencia"></tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block subcontent %}
+<!-- MODAL CÁMARA -->
+<div class="modal fade" id="modalCamara" tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content asistencia-modal">
+
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title fw-bold" id="tituloModalCamara">
+                        <i class="bi bi-camera me-2"></i>
+                        Marcar asistencia
+                    </h5>
+                    <small class="text-muted">
+                        Capture una fotografía para validar el marcado
+                    </small>
+                </div>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body p-4 text-center">
+
+                <div class="camera-container">
+                    <video id="videoCamara" autoplay playsinline class="camera-video"></video>
+
+                    <canvas id="canvasCamara" class="camera-video" style="display:none"></canvas>
+                </div>
+
+                <div id="estadoUbicacion" class="location-status mt-3">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    Obteniendo ubicación...
+                </div>
+
+                <div id="botonesCamara" class="mt-3">
+                    <button class="btn btn-primary btn-lg w-100" id="btnCapturar">
+                        <i class="bi bi-camera-fill me-2"></i>
+                        Tomar foto
+                    </button>
+                </div>
+
+                <div id="botonesConfirmar" class="d-none mt-3 d-flex gap-2">
+                    <button class="btn btn-outline-secondary flex-fill" id="btnRetomar">
+                        <i class="bi bi-arrow-repeat me-1"></i>
+                        Repetir
+                    </button>
+
+                    <button class="btn btn-success flex-fill" id="btnConfirmarMarcado">
+                        <i class="bi bi-check-lg me-1"></i>
+                        Confirmar
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL VER MARCADO -->
+<div class="modal fade" id="modalVer" tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content asistencia-modal">
+
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="tituloModalVer">
+                    <i class="bi bi-eye me-2"></i>
+                    Detalle de marcado
+                </h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center p-4">
+
+                <div class="foto-preview">
+                    <img id="fotoVer" class="img-fluid rounded" style="max-height: 350px" />
+                </div>
+
+                <div id="ubicacionVer" class="mt-3"></div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/asistencia/listar_asistencia.js') }}"></script>
+<script src="{{ url_for('static', filename='js/asistencia/filtro_asistencia.js') }}"></script>
+<script src="{{ url_for('static', filename='js/asistencia/buscar_asistencia.js') }}"></script>
+<script src="{{ url_for('static', filename='js/asistencia/registrar_asistencia.js') }}"></script>
+<script src="{{ url_for('static', filename='js/asistencia/camara_asistencia.js') }}"></script>
+<script src="{{ url_for('static', filename='js/asistencia/entrada_asistencia.js') }}"></script>
+<script src="{{ url_for('static', filename='js/asistencia/salida_asistencia.js') }}"></script>
+<script src="{{ url_for('static', filename='js/asistencia/ver_asistencia.js') }}"></script>
+{% endblock %}

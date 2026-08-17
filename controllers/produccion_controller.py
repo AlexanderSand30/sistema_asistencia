@@ -41,7 +41,7 @@ def exportar_pdf_produccion():
         datos = service.obtener_resumen(fecha_inicio, fecha_fin, dni)
 
         html_renderizado = render_template(
-            "produccion/produccion_pdf.html",
+            "produccion/reportes/produccion_pdf.html",
             registros=datos,
             fecha_inicio=fecha_inicio,
             fecha_fin=fecha_fin,

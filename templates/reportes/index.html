@@ -1,0 +1,67 @@
+{% extends "layouts/side-menu.html" %}
+
+{% block content %}
+
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Módulo Reportes</h4>
+    </div>
+    <hr>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h6 class="card-title">Filtrar Reporte</h6>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label>Fecha Inicio</label>
+                    <input type="date" id="fechaInicio" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Fecha Fin</label>
+                    <input type="date" id="fechaFin" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>DNI (opcional)</label>
+                    <input type="text" id="dniReporte" class="form-control" maxlength="8" placeholder="Todos">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" id="btnBuscarReporte">🔍 Buscar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="text-muted small" id="totalResultados"></span>
+        <button class="btn btn-danger" id="btnExportarPDF">📄 Exportar PDF</button>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>DNI</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Obra</th>
+                <th>Cargo</th>
+                <th>Fecha</th>
+                <th>Entrada</th>
+                <th>Salida</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTablaReporte">
+            <tr>
+                <td colspan="9" class="text-center text-muted">Elige un rango de fechas y haz clic en "Buscar"</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/trabajadores/sidebar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/reportes/listar_reportes.js') }}"></script>
+<script src="{{ url_for('static', filename='js/reportes/exportar_pdf.js') }}"></script>
+{% endblock %}

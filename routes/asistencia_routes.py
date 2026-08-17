@@ -11,7 +11,7 @@ asistencia_bp = Blueprint("asistencia", __name__)
 def vista_asistencia():
     if not session.get("usuario_id"):
         return redirect(url_for("usuario.login"))
-    return render_template("asistencia.html")
+    return render_template("asistencia/index.html")
 
 
 asistencia_bp.route("/api/asistencias/buscar/<dni>", methods=["GET"])(buscar_por_dni)

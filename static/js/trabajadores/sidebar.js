@@ -1,17 +1,73 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const sidebar = document.getElementById('sidebar');
-    const closeBtn = document.getElementById('sidebarToggle');
-    const openBtn = document.getElementById('sidebarOpenBtn');
+document.addEventListener("DOMContentLoaded", function () {
 
-    if (!sidebar || !closeBtn || !openBtn) return;
+    const sidebar = document.getElementById("sidebar");
+    const toggleBtn = document.getElementById("sidebarToggle");
+    const openBtn = document.getElementById("sidebarOpenBtn");
+    const overlay = document.getElementById("sidebarOverlay");
 
-    closeBtn.addEventListener('click', function () {
-        sidebar.classList.add('sidebar-hidden');
-        openBtn.classList.add('show');
+    if (!sidebar || !toggleBtn || !openBtn) return;
+
+
+    function cerrarSidebar() {
+        sidebar.classList.add("sidebar-hidden");
+        openBtn.classList.add("show");
+        openBtn.setAttribute("aria-expanded", "false");
+
+        if (overlay) {
+            overlay.classList.remove("show");
+        }
+    }
+
+
+    function abrirSidebar() {
+        sidebar.classList.remove("sidebar-hidden");
+        openBtn.classList.remove("show");
+        openBtn.setAttribute("aria-expanded", "true");
+
+        if (overlay) {
+            overlay.classList.add("show");
+        }
+    }
+
+
+    // Botón superior
+    toggleBtn.addEventListener("click", function () {
+        if (sidebar.classList.contains("sidebar-hidden")) {
+            abrirSidebar();
+        } else {
+            cerrarSidebar();
+        }
     });
 
-    openBtn.addEventListener('click', function () {
-        sidebar.classList.remove('sidebar-hidden');
-        openBtn.classList.remove('show');
+
+    // Botón móvil
+    openBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        abrirSidebar();
     });
+
+
+    // Overlay
+    if (overlay) {
+        overlay.addEventListener("click", function () {
+            cerrarSidebar();
+        });
+
+    }
+
+
+    // Cerrar al seleccionar una opción en móvil
+    document.querySelectorAll(".sidebar-nav .nav-link").forEach(function (link) {
+        link.addEventListener("click", function () {
+            if (window.innerWidth <= 767) {
+                cerrarSidebar();
+            }
+        });
+    });
+
+
+    // Estado inicial
+    if (window.innerWidth <= 767) {
+        cerrarSidebar();
+    }
 });

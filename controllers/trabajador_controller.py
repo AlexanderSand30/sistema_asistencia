@@ -1,4 +1,6 @@
 import sys, os
+import math
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from flask import request, jsonify, session
@@ -14,15 +16,44 @@ def _validar_dni(dni):
     return None
 
 
+def _serializar_trabajadores(trabajadores):
+    return [{
+        "id": t.id,
+        "dni": t.dni,
+        "nombres": t.nombres,
+        "apellidos": t.apellidos,
+        "cargo": t.cargo,
+        "estado": t.estado,
+    } for t in trabajadores]
+
+
+def _paginar_datos(items, page, per_page):
+    per_page = max(1, int(per_page))
+    page = max(1, int(page))
+    total = len(items)
+    total_pages = max(1, math.ceil(total / per_page)) if total else 1
+    if page > total_pages and total:
+        page = total_pages
+    inicio = (page - 1) * per_page
+    fin = inicio + per_page
+    return {
+        "items": items[inicio:fin],
+        "page": page,
+        "per_page": per_page,
+        "total": total,
+        "total_pages": total_pages,
+    }
+
+
 def listar_trabajadores():
     if session.get('rol') != 'admin':
         return jsonify({"error": "No autorizado"}), 403
     try:
+        page = request.args.get("page", 1, type=int)
+        per_page = request.args.get("per_page", 8, type=int)
         trabajadores = service.listar()
-        return jsonify([{
-            "id": t.id, "dni": t.dni, "nombres": t.nombres,
-            "apellidos": t.apellidos, "cargo": t.cargo, "estado": t.estado
-        } for t in trabajadores]), 200
+        payload = _paginar_datos(_serializar_trabajadores(trabajadores), page, per_page)
+        return jsonify(payload), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -31,11 +62,11 @@ def listar_inactivos():
     if session.get('rol') != 'admin':
         return jsonify({"error": "No autorizado"}), 403
     try:
+        page = request.args.get("page", 1, type=int)
+        per_page = request.args.get("per_page", 8, type=int)
         trabajadores = service.listar_inactivos()
-        return jsonify([{
-            "id": t.id, "dni": t.dni, "nombres": t.nombres,
-            "apellidos": t.apellidos, "cargo": t.cargo, "estado": t.estado
-        } for t in trabajadores]), 200
+        payload = _paginar_datos(_serializar_trabajadores(trabajadores), page, per_page)
+        return jsonify(payload), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

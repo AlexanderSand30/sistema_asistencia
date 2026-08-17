@@ -8,7 +8,7 @@ reporte_bp = Blueprint("reporte", __name__)
 def vista_reportes():
     if not session.get("usuario_id"):
         return redirect(url_for("usuario.login"))
-    return render_template("reportes.html")
+    return render_template("reportes/index.html")
 
 
 reporte_bp.route("/api/reportes", methods=["GET"])(obtener_datos_reporte)

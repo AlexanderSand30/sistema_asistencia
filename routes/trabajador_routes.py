@@ -13,7 +13,7 @@ def vista_trabajadores():
         return redirect(url_for("usuario.login"))
     if session.get("rol") != "admin":
         return "No autorizado", 403
-    return render_template("trabajadores.html")
+    return render_template("trabajadores/index.html")
 
 
 trabajador_bp.route("/api/trabajadores", methods=["GET"])(listar_trabajadores)
