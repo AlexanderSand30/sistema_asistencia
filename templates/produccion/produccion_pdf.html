@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+    @page {
+        size: A4 landscape;
+        margin: 1.5cm;
+        @frame footer_frame {
+            -pdf-frame-content: footer_content;
+            bottom: 1cm; margin-left: 1.5cm; margin-right: 1.5cm; height: 1cm;
+        }
+    }
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 10px; color: #333; }
+    .header table { width: 100%; border-bottom: 3px solid #2c3e50; padding-bottom: 8px; margin-bottom: 12px; }
+    .header img { width: 45px; }
+    .header h1 { font-size: 16px; color: #2c3e50; margin: 0; }
+    .header .sub { font-size: 9px; color: #888; }
+    .info-bar { background-color: #f4f6f8; padding: 6px 10px; border-radius: 3px;
+                margin-bottom: 10px; font-size: 9px; color: #555; }
+    table.datos { width: 100%; border-collapse: collapse; }
+    table.datos th { background-color: #2c3e50; color: white; padding: 6px;
+                     font-size: 9px; text-transform: uppercase; }
+    table.datos td { border-bottom: 1px solid #e0e0e0; padding: 5px 6px; font-size: 9px; }
+    table.datos tr:nth-child(even) { background-color: #f8f9fa; }
+    .extra { color: #b8860b; font-weight: bold; }
+    .faltas { color: #dc3545; font-weight: bold; }
+    #footer_content { font-size: 8px; color: #999; text-align: center; }
+</style>
+</head>
+<body>
+    <div class="header">
+        <table>
+            <tr>
+                <td style="width:55px;">
+                    <img src="{{ url_for('static', filename='img/Tech.png') }}">
+                </td>
+                <td>
+                    <h1>RL NEXUS TECH</h1>
+                    <div class="sub">Reporte de Producción (Horas y Faltas)</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="info-bar">
+        Periodo: <strong>{{ fecha_inicio }}</strong> al <strong>{{ fecha_fin }}</strong>
+        &nbsp;|&nbsp; Generado: {{ fecha_generacion }}
+        &nbsp;|&nbsp; Total trabajadores: {{ registros|length }}
+    </div>
+
+    <table class="datos">
+        <thead>
+            <tr>
+                <th>DNI</th><th>Nombres</th><th>Apellidos</th><th>Cargo</th>
+                <th>Horas Trabajadas</th><th>Horas Extra</th><th>Faltas</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in registros %}
+            <tr>
+                <td>{{ r.dni }}</td><td>{{ r.nombres }}</td><td>{{ r.apellidos }}</td><td>{{ r.cargo }}</td>
+                <td>{{ r.horas_trabajadas }}</td>
+                <td class="extra">{{ r.horas_extra }}</td>
+                <td class="faltas">{{ r.faltas }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="footer_content">RL NEXUS TECH — Sistema de Control de Asistencia con Geolocalización</div>
+</body>
+</html><section></section>

@@ -1,0 +1,132 @@
+/* ===== Sidebar responsivo con toggle abrir/cerrar ===== */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+    background-color: #0a1454;
+    width: 220px;
+    min-height: 100vh;
+    padding: 1rem;
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: width 0.2s ease, padding 0.2s ease;
+}
+
+.sidebar.sidebar-hidden {
+    width: 0;
+    padding: 1rem 0;
+    min-height: 100vh;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    white-space: nowrap;
+}
+
+.sidebar-logo {
+    max-width: 160px;
+    height: auto;
+}
+
+.sidebar-toggle {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+}
+
+.sidebar .nav-link {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.6rem 0.5rem;
+    margin-bottom: 0.4rem;
+    border-radius: 6px;
+    transition: background-color 0.15s ease, padding-left 0.15s ease;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(59, 169, 232, 0.18);
+    padding-left: 0.75rem;
+}
+
+.sidebar .logout {
+    color: #e74c3c;
+    margin-top: auto;
+}
+
+.sidebar .logout:hover {
+    background-color: rgba(231, 76, 60, 0.12);
+}
+
+/* Boton flotante para volver a abrir el sidebar cuando esta cerrado */
+.sidebar-open-btn {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1000;
+    background-color: #0a1454;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.sidebar-open-btn.show {
+    display: block;
+}
+
+/* Tablet: sidebar mas angosto cuando esta abierto */
+@media (max-width: 991px) {
+    .sidebar:not(.sidebar-hidden) {
+        width: 180px;
+    }
+}
+
+/* Movil: sidebar se convierte en barra superior colapsable */
+@media (max-width: 768px) {
+    .sidebar:not(.sidebar-hidden) {
+        width: 100%;
+        min-height: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 0.75rem 1rem;
+    }
+
+    .sidebar:not(.sidebar-hidden) .sidebar-header {
+        margin-bottom: 0;
+        width: 100%;
+    }
+
+    .sidebar:not(.sidebar-hidden) .sidebar-nav {
+        flex-basis: 100%;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .sidebar:not(.sidebar-hidden) .logout {
+        margin-top: 0;
+    }
+
+    .sidebar.sidebar-hidden {
+        min-height: 0;
+        height: 0;
+        padding: 0;
+    }
+}

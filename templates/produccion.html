@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producción | RL NEXUS TECH</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/sidebar.css') }}" rel="stylesheet">
+</head>
+<body>
+<button class="sidebar-open-btn" id="sidebarOpenBtn" aria-label="Abrir menu">☰</button>
+
+<div class="d-flex">
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='img/Tech.png') }}" class="sidebar-logo">
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Cerrar menu">☰</button>
+        </div>
+        <nav class="sidebar-nav" id="sidebarNav">
+            <a href="/trabajadores" class="nav-link">👤 Trabajadores</a>
+            <a href="/asistencia" class="nav-link">📋 Asistencia</a>
+            <a href="/reportes" class="nav-link">📊 Reportes</a>
+            <a href="/produccion" class="nav-link">🏭 Producción</a>
+            <a href="/logout" class="nav-link logout">🚪 Cerrar Sesión</a>
+        </nav>
+    </div>
+   
+    <div class="flex-grow-1 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>Módulo Producción</h4>
+            <span class="text-muted">Bienvenido, <strong>{{ session.get('nombre', '') }}</strong></span>
+        </div>
+        <p class="text-muted small">Horas trabajadas, horas extra (sobre 48h semanales) y faltas, por trabajador.</p>
+        <hr>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label>Fecha Inicio</label>
+                        <input type="date" id="fechaInicio" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Fecha Fin</label>
+                        <input type="date" id="fechaFin" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label>DNI (opcional)</label>
+                        <input type="text" id="dniProduccion" class="form-control" maxlength="8" placeholder="Todos">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100" id="btnBuscarProduccion">🔍 Buscar</button>
+                    </div>
+                </div>
+                <button class="btn btn-outline-secondary btn-sm mt-2" id="btnSemanaActual">Esta semana</button>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+            <button class="btn btn-danger" id="btnExportarPDF">📄 Exportar PDF</button>
+            <button class="btn btn-success" id="btnExportarExcel">📊 Exportar Excel</button>
+        </div>
+
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>DNI</th><th>Nombres</th><th>Apellidos</th><th>Cargo</th>
+                    <th>Horas Trabajadas</th><th>Horas Extra</th><th>Faltas</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpoTablaProduccion">
+                <tr><td colspan="7" class="text-center text-muted">Elige un rango de fechas y haz clic en "Buscar"</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/produccion/listar_produccion.js') }}"></script>
+<script src="{{ url_for('static', filename='js/trabajadores/sidebar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/produccion/exportar_produccion.js') }}"></script>
+</body>
+</html>
