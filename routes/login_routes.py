@@ -19,7 +19,7 @@ def login():
         return authenticate()
 
     if session.get("usuario_id"):
-        return redirect(url_for("trabajador.vista_trabajadores"))
+        return redirect(url_for("dashboard"))
     return render_template("login.html")
 
 

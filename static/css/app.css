@@ -215,6 +215,12 @@ body {
     padding: .375rem 1rem
 }
 
+.form-select-sm {
+    font-size: .85rem;
+    line-height: 1rem;
+    padding: .5rem 2rem .5rem .5rem
+}
+
 .input-group .form-control {
     border-radius: 0 8px 8px 0;
 }

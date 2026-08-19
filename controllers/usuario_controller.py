@@ -1,19 +1,80 @@
 from datetime import datetime
-from flask import flash, redirect, url_for, request, jsonify
+
+from flask import session
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
+
+from config.constants import ROLES, PASSWORD_MIN_LENGTH
 from models.usuario import db, Usuario
 
 
 class UsuarioController:
+
+    # ---------- HELPERS INTERNOS ----------
     @staticmethod
-    def listar(busqueda="", pagina=1, por_pagina=10):
+    def _puede_gestionar(usuario_objetivo):
+        return (
+            usuario_objetivo.rol != "superadmin" or session.get("rol") == "superadmin"
+        )
+
+    @staticmethod
+    def _rol_valido(rol):
+        return rol in ROLES
+
+    @staticmethod
+    def _puede_asignar_rol(rol):
+        # Solo un superadmin puede crear/ascender a otro superadmin.
+        if rol == "superadmin" and session.get("rol") != "superadmin":
+            return False
+        return True
+
+    @staticmethod
+    def _usuario_existe(nombre_usuario, excluir_id=None):
+        # Comparación case-insensitive: evita que "Juan" y "juan"
+        # convivan como cuentas "distintas" pero confusamente iguales.
+        query = Usuario.query.filter(
+            func.lower(Usuario.usuario) == nombre_usuario.lower()
+        )
+        if excluir_id is not None:
+            query = query.filter(Usuario.id != excluir_id)
+        return query.first() is not None
+
+    @staticmethod
+    def _escapar_like(texto):
+        # Escapa los comodines propios de LIKE/ILIKE para que una
+        # búsqueda con "%" o "_" no se interprete como comodín.
+        return texto.replace("\\", "\\\\").replace("%", r"\%").replace("_", r"\_")
+
+    @staticmethod
+    def _aplicar_estado(usuario, nuevo_estado):
+        usuario.estado = nuevo_estado
+        usuario.updated_by = session.get("usuario_id")
+        if nuevo_estado:
+            usuario.deleted_by = None
+            usuario.deleted_at = None
+        else:
+            usuario.deleted_by = session.get("usuario_id")
+            usuario.deleted_at = datetime.utcnow()
+
+    # ---------- LISTAR ----------
+    @staticmethod
+    def listar(busqueda="", estado="activos", pagina=1, por_pagina=10):
         query = Usuario.query
+        if session.get("rol") != "superadmin":
+            query = query.filter(Usuario.rol != "superadmin")
 
         if busqueda:
+            patron = f"%{UsuarioController._escapar_like(busqueda)}%"
             query = query.filter(
-                (Usuario.usuario.ilike(f"%{busqueda}%"))
-                | (Usuario.nombre.ilike(f"%{busqueda}%"))
-                | (Usuario.email.ilike(f"%{busqueda}%"))
+                (Usuario.usuario.ilike(patron, escape="\\"))
+                | (Usuario.nombre.ilike(patron, escape="\\"))
+                | (Usuario.rol.ilike(patron, escape="\\"))
             )
+
+        if estado == "activos":
+            query = query.filter(Usuario.estado.is_(True))
+        elif estado == "inactivos":
+            query = query.filter(Usuario.estado.is_(False))
 
         return query.order_by(Usuario.id.desc()).paginate(
             page=pagina, per_page=por_pagina
@@ -26,77 +87,107 @@ class UsuarioController:
 
     # ---------- CREAR ----------
     @staticmethod
-    def crear(form):
+    def crear(nombre, usuario, password, rol, estado=True):
+        if not UsuarioController._rol_valido(rol):
+            return None, "Rol no válido."
+        if not UsuarioController._puede_asignar_rol(rol):
+            return None, "Solo un superadministrador puede crear superadministradores."
+        if len(password) < PASSWORD_MIN_LENGTH:
+            return (
+                None,
+                f"La contraseña debe tener al menos {PASSWORD_MIN_LENGTH} caracteres.",
+            )
+
+        nombre_usuario = usuario.strip()
+        if UsuarioController._usuario_existe(nombre_usuario):
+            return None, "Ese nombre de usuario ya está en uso."
+
         nuevo = Usuario(
-            usuario=form.usuario.data,
-            nombre_completo=form.nombre_completo.data,
-            email=form.email.data,
-            rol=form.rol.data,
-            activo=form.activo.data,
+            nombre=nombre.strip(),
+            usuario=nombre_usuario,
+            rol=rol,
+            estado=estado,
+            created_by=session.get("usuario_id"),
         )
-        nuevo.set_password(form.password.data)
+        nuevo.set_password(password)
 
         db.session.add(nuevo)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return None, "Ese nombre de usuario ya está en uso."
 
-        flash("Usuario creado correctamente.", "success")
-        return nuevo
+        return nuevo, None
 
     # ---------- EDITAR ----------
     @staticmethod
-    def editar(id, form):
+    def editar(id, nombre, nombre_usuario, password, rol, estado):
         usuario = Usuario.query.get_or_404(id)
 
-        existente_usuario = Usuario.query.filter(
-            Usuario.usuario == form.usuario.data, Usuario.id != id
-        ).first()
-        existente_email = Usuario.query.filter(
-            Usuario.email == form.email.data, Usuario.id != id
-        ).first()
+        if not UsuarioController._puede_gestionar(usuario):
+            return None, "No tienes permisos para modificar este usuario."
+        if not UsuarioController._rol_valido(rol):
+            return None, "Rol no válido."
+        if not UsuarioController._puede_asignar_rol(rol):
+            return None, "Solo un superadministrador puede asignar ese rol."
+        if password and len(password) < PASSWORD_MIN_LENGTH:
+            return (
+                None,
+                f"La contraseña debe tener al menos {PASSWORD_MIN_LENGTH} caracteres.",
+            )
 
-        if existente_usuario:
-            flash("Ese nombre de usuario ya está en uso.", "danger")
-            return None, usuario
+        nombre_usuario = nombre_usuario.strip()
+        if UsuarioController._usuario_existe(nombre_usuario, excluir_id=id):
+            return None, "Ese nombre de usuario ya está en uso."
 
-        if existente_email:
-            flash("Ese email ya está en uso.", "danger")
-            return None, usuario
+        usuario.nombre = nombre.strip()
+        usuario.usuario = nombre_usuario
+        usuario.rol = rol
+        usuario.updated_by = session.get("usuario_id")
 
-        usuario.usuario = form.usuario.data
-        usuario.nombre_completo = form.nombre_completo.data
-        usuario.email = form.email.data
-        usuario.rol = form.rol.data
-        usuario.activo = form.activo.data
+        # Reutiliza la misma lógica de auditoría que usa el toggle,
+        # para no duplicar el manejo de deleted_by/deleted_at.
+        UsuarioController._aplicar_estado(usuario, estado)
 
-        if form.password.data:
-            usuario.set_password(form.password.data)
+        if password:
+            usuario.set_password(password)
 
-        db.session.commit()
-        flash("Usuario actualizado correctamente.", "success")
-        return usuario, usuario
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return None, "Ese nombre de usuario ya está en uso."
+        return usuario, None
 
-    # ---------- ELIMINAR ----------
+    # ---------- ELIMINAR (desactivar) ----------
     @staticmethod
     def eliminar(id):
-        if id == current_user.id:
-            flash("No puedes eliminar tu propio usuario.", "danger")
-            return False
+        if id == session.get("usuario_id"):
+            return False, "No puedes eliminar tu propio usuario."
 
         usuario = Usuario.query.get_or_404(id)
-        db.session.delete(usuario)
+        if not UsuarioController._puede_gestionar(usuario):
+            return False, "No tienes permisos para desactivar este usuario."
+        if not usuario.estado:
+            return False, "El usuario ya está inactivo."
+
+        UsuarioController._aplicar_estado(usuario, False)
         db.session.commit()
 
-        flash("Usuario eliminado correctamente.", "success")
-        return True
+        return True, None
 
     # ---------- TOGGLE ESTADO ----------
     @staticmethod
     def toggle_estado(id):
-        if id == current_user.id:
-            return {"ok": False, "mensaje": "No puedes desactivarte a ti mismo."}, 400
+        if id == session.get("usuario_id"):
+            return None, "No puedes cambiar el estado de tu propio usuario."
 
         usuario = Usuario.query.get_or_404(id)
-        usuario.activo = not usuario.activo
+        if not UsuarioController._puede_gestionar(usuario):
+            return None, "No tienes permisos para cambiar el estado de este usuario."
+
+        UsuarioController._aplicar_estado(usuario, not usuario.estado)
         db.session.commit()
 
-        return {"ok": True, "activo": usuario.activo}, 200
+        return usuario.estado, None

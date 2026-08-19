@@ -2,12 +2,13 @@ from flask import (
     Blueprint,
     render_template,
     request,
-    session,
     redirect,
     url_for,
-    jsonify,
+    flash,
 )
-from utils.decorators import login_required
+
+from config.constants import ROLES, PASSWORD_MIN_LENGTH
+from utils.decorators import login_required, admin_required
 from controllers.usuario_controller import UsuarioController
 
 usuario_bp = Blueprint("usuario", __name__, url_prefix="/usuarios")
@@ -15,69 +16,99 @@ usuario_bp = Blueprint("usuario", __name__, url_prefix="/usuarios")
 
 @usuario_bp.route("/")
 @login_required
-# @admin_required
+@admin_required
 def listar():
     pagina = request.args.get("page", 1, type=int)
     busqueda = request.args.get("q", "")
+    estado = request.args.get("estado", "activos")
+    if estado not in ("activos", "inactivos", "todos"):
+        estado = "activos"
 
-    usuarios = UsuarioController.listar(busqueda=busqueda, pagina=pagina)
-    return render_template("usuarios/index.html", usuarios=usuarios, busqueda=busqueda)
+    usuarios = UsuarioController.listar(busqueda=busqueda, estado=estado, pagina=pagina)
+    return render_template(
+        "usuarios/index.html", usuarios=usuarios, busqueda=busqueda, estado=estado
+    )
 
 
 @usuario_bp.route("/crear", methods=["GET", "POST"])
 @login_required
-# @admin_required
+@admin_required
 def crear():
-    # form = UsuarioForm()
+    if request.method == "GET":
+        return redirect(url_for("usuario.listar"))
 
-    # if form.validate_on_submit():
-    #     nuevo = Usuario(
-    #         usuario=form.usuario.data,
-    #         nombre_completo=form.nombre_completo.data,
-    #         email=form.email.data,
-    #         rol=form.rol.data,
-    #         activo=form.activo.data,
-    #     )
-    #     nuevo.set_password(form.password.data)
+    nombre = request.form.get("nombre", "").strip()
+    usuario = request.form.get("usuario", "").strip()
+    password = request.form.get("password", "")
+    rol = request.form.get("rol", "supervisor")
 
-    #     db.session.add(nuevo)
-    #     db.session.commit()
+    if (
+        not nombre
+        or not usuario
+        or len(password) < PASSWORD_MIN_LENGTH
+        or rol not in ROLES
+    ):
+        flash("Completa todos los campos obligatorios.", "danger")
+        return redirect(url_for("usuario.listar"))
 
-    #     flash("Usuario creado correctamente.", "success")
+    _, error = UsuarioController.crear(nombre, usuario, password, rol)
+    (
+        flash(error, "danger")
+        if error
+        else flash("Usuario creado correctamente.", "success")
+    )
     return redirect(url_for("usuario.listar"))
-
-
-# return render_template("usuarios/crear.html", form=form)
 
 
 @usuario_bp.route("/editar/<int:id>", methods=["GET", "POST"])
 @login_required
-# @admin_required
+@admin_required
 def editar(id):
-    usuario = UsuarioController.obtener_por_id(id)
-    # form = UsuarioEditForm(obj=usuario)
+    if request.method == "GET":
+        return redirect(url_for("usuario.listar"))
 
-    # if form.validate_on_submit():
-    #     actualizado, _ = UsuarioController.editar(id, form)
-    #     if actualizado:
-    #         return redirect(url_for("usuario.listar"))
+    nombre = request.form.get("nombre", "").strip()
+    nombre_usuario = request.form.get("usuario", "").strip()
+    password = request.form.get("password", "")
+    rol = request.form.get("rol", "supervisor")
+    estado = request.form.get("estado") == "1"
 
-    # return render_template("usuarios/editar.html", form=form, usuario=usuario)
+    if not nombre or not nombre_usuario or rol not in ROLES:
+        flash("Completa todos los campos obligatorios.", "danger")
+        return redirect(url_for("usuario.listar"))
 
-
-# ---------- ELIMINAR ----------
-@usuario_bp.route("/eliminar/<int:id>", methods=["POST"])
-@login_required
-# @admin_required
-def eliminar(id):
-    UsuarioController.eliminar(id)
+    _, error = UsuarioController.editar(
+        id, nombre, nombre_usuario, password, rol, estado
+    )
+    (
+        flash(error, "danger")
+        if error
+        else flash("Usuario actualizado correctamente.", "success")
+    )
     return redirect(url_for("usuario.listar"))
 
 
-# ---------- TOGGLE ESTADO (AJAX) ----------
+@usuario_bp.route("/eliminar/<int:id>", methods=["POST"])
+@login_required
+@admin_required
+def eliminar(id):
+    eliminado, error = UsuarioController.eliminar(id)
+    if error:
+        flash(error, "danger")
+    elif eliminado:
+        flash("Usuario eliminado correctamente.", "success")
+    return redirect(url_for("usuario.listar"))
+
+
 @usuario_bp.route("/toggle-estado/<int:id>", methods=["POST"])
 @login_required
-# @admin_required
+@admin_required
 def toggle_estado(id):
-    resultado, status = UsuarioController.toggle_estado(id)
-    return jsonify(resultado), status
+    estado, error = UsuarioController.toggle_estado(id)
+    if error:
+        flash(error, "danger")
+    elif estado:
+        flash("Usuario activado correctamente.", "success")
+    else:
+        flash("Usuario desactivado correctamente.", "success")
+    return redirect(url_for("usuario.listar"))

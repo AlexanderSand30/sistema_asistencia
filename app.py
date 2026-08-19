@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, session
+from flask import Flask, redirect, render_template, url_for, session
 
 from config.database import Config
 from config.extensions import db
@@ -31,10 +31,15 @@ def index():
     if not session.get("usuario_id"):
         return redirect(url_for("login.login"))
 
-    if session.get("rol") == "admin":
-        return redirect(url_for("trabajador.vista_trabajadores"))
+    return redirect(url_for("dashboard"))
 
-    return redirect(url_for("asistencia.vista_asistencia"))
+
+@app.route("/dashboard")
+def dashboard():
+    if not session.get("usuario_id"):
+        return redirect(url_for("login.login"))
+
+    return render_template("dashboard.html")
 
 
 if __name__ == "__main__":

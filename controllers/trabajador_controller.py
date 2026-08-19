@@ -46,8 +46,6 @@ def _paginar_datos(items, page, per_page):
 
 
 def listar_trabajadores():
-    if session.get('rol') != 'admin':
-        return jsonify({"error": "No autorizado"}), 403
     try:
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 8, type=int)
@@ -59,7 +57,7 @@ def listar_trabajadores():
 
 
 def listar_inactivos():
-    if session.get('rol') != 'admin':
+    if session.get('rol') not in ('admin', 'superadmin'):
         return jsonify({"error": "No autorizado"}), 403
     try:
         page = request.args.get("page", 1, type=int)
@@ -72,7 +70,7 @@ def listar_inactivos():
 
 
 def crear_trabajador():
-    if session.get('rol') != 'admin':
+    if session.get('rol') not in ('admin', 'superadmin'):
         return jsonify({"error": "No autorizado"}), 403
     try:
         data = request.get_json()
@@ -87,7 +85,7 @@ def crear_trabajador():
 
 
 def actualizar_trabajador(id):
-    if session.get('rol') != 'admin':
+    if session.get('rol') not in ('admin', 'superadmin'):
         return jsonify({"error": "No autorizado"}), 403
     try:
         data = request.get_json()
@@ -102,7 +100,7 @@ def actualizar_trabajador(id):
 
 
 def eliminar_trabajador(id):
-    if session.get('rol') != 'admin':
+    if session.get('rol') not in ('admin', 'superadmin'):
         return jsonify({"error": "No autorizado"}), 403
     try:
         service.eliminar(id)
@@ -112,7 +110,7 @@ def eliminar_trabajador(id):
 
 
 def reactivar_trabajador(id):
-    if session.get('rol') != 'admin':
+    if session.get('rol') not in ('admin', 'superadmin'):
         return jsonify({"error": "No autorizado"}), 403
     try:
         service.reactivar(id)

@@ -2,74 +2,183 @@
 
 <!-- CABECERA -->
 {% block content %}
-<div>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="text-uppercase fw-bold">Gestión de Usuarios</h4>
-        <a href="{{ url_for('usuario.crear') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Nuevo usuario
-        </a>
+    <div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <h4 class="text-uppercase fw-bold mb-0">Gestión de Usuarios</h4>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalUsuario" onclick="prepararNuevoUsuario()">
+                <i class="bi bi-plus-circle"></i> Nuevo usuario
+            </button>
+        </div>
+
+        <form method="GET" class="row g-2 mb-3">
+            <div class="col-md-7">
+                <input type="text" name="q" value="{{ busqueda }}" class="form-control form-control-sm" placeholder="Buscar por usuario, nombre o rol..." autocomplete="off">
+            </div>
+            <div class="col-md-3">
+                <select name="estado" class="form-select form-select-sm" aria-label="Filtrar usuarios por estado">
+                    <option value="activos" {{ 'selected' if estado == 'activos' }}>Activos</option>
+                    <option value="inactivos" {{ 'selected' if estado == 'inactivos' }}>Inactivos</option>
+                    <option value="todos" {{ 'selected' if estado == 'todos' }}>Todos</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-funnel"></i> Filtrar</button>
+            </div>
+        </form>
+
+        <div class="table-responsive overflow-auto">
+            <table class="table table-hover align-middle table-mobile-cards">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTabla">
+                    {% for u in usuarios.items %}
+                        <tr>
+                            <td>{{ u.usuario }}</td>
+                            <td>{{ u.nombre }}</td>
+                            <td class="text-uppercase">
+                                <span class="badge bg-{{ 'dark' if u.rol in ('admin', 'superadmin') else 'secondary' }}">
+                                    {{ u.rol }}
+                                </span>
+                            </td>
+                            <td class="text-uppercase">
+                                <span class="badge bg-{{ 'success' if u.estado else 'danger' }}">
+                                    {{ 'Activo' if u.estado else 'Inactivo' }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                {% if u.estado %}
+                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalUsuario" data-id="{{ u.id }}" data-nombre="{{ u.nombre|e }}" data-usuario="{{ u.usuario|e }}" data-rol="{{ u.rol }}" data-estado="{{ 1 if u.estado else 0 }}" onclick="prepararEditarUsuario(this)" title="Editar usuario">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <form action="{{ url_for('usuario.eliminar', id=u.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Desactivar este usuario?');">
+                                        <button class="btn btn-sm btn-outline-danger" title="Desactivar usuario"><i class="bi bi-person-dash"></i></button>
+                                    </form>
+                                {% else %}
+                                    <form action="{{ url_for('usuario.toggle_estado', id=u.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Activar este usuario?');">
+                                        <button class="btn btn-sm btn-outline-success" title="Activar usuario"><i class="bi bi-person-check"></i></button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No hay usuarios registrados.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if usuarios.pages > 1 %}
+            <nav>
+                <ul class="pagination">
+                    {% for p in usuarios.iter_pages() %}
+                        <li class="page-item {{ 'active' if p == usuarios.page else '' }}">
+                            {% if p %}
+                                <a class="page-link" href="{{ url_for('usuario.listar', page=p, q=busqueda, estado=estado) }}">{{ p }}</a>
+                            {% else %}
+                                <span class="page-link">…</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        {% endif %}
     </div>
+{% endblock %}
 
-    <form method="GET" class="mb-3">
-        <input type="text" name="q" value="{{ busqueda }}" class="form-control" placeholder="Buscar por usuario, nombre o email...">
-    </form>
-
-    <div class="table-responsive overflow-auto">
-        <table class="table table-hover align-middle table-mobile-cards">
-            <thead>
-                <tr>
-                    <th>Usuario</th>
-                    <th>Nombre completo</th>
-                    <th>Rol</th>
-                    <th>Estado</th>
-                    <th>Último acceso</th>
-                    <th class="text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="cuerpoTabla">
-                {% for u in usuarios.items %}
-                <tr>
-                    <td>{{ u.usuario }}</td>
-                    <td>{{ u.nombre }}</td>
-                    <td class="text-uppercase">
-                        <span class="badge bg-{{ 'dark' if u.rol == 'admin' else 'secondary' }}">
-                            {{ u.rol }}
-                        </span>
-                    </td>
-                    <td class="text-uppercase">
-                        <span class="badge bg-{{ 'success' if u.activo else 'danger' }}">
-                            {{ 'Activo' if u.activo else 'Inactivo' }}
-                        </span>
-                    </td>
-                    <td>{{ u.ultimo_acceso.strftime('%Y-%m-%d %H:%M') if u.ultimo_acceso else '—' }}</td>
-                    <td class="text-center">
-                        <a href="{{ url_for('usuario.editar', id=u.id) }}" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <form action="{{ url_for('usuario.eliminar', id=u.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar este usuario?');">
-                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                        </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="7" class="text-center text-muted">No hay usuarios registrados.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% block subcontent %}
+    <div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="tituloModalUsuario" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tituloModalUsuario">Nuevo usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <form id="formUsuario" method="POST" autocomplete="off">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nombreUsuario" class="form-label">Nombre</label>
+                            <input id="nombreUsuario" name="nombre" class="form-control" required maxlength="100">
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginUsuario" class="form-label">Usuario</label>
+                            <input id="loginUsuario" name="usuario" class="form-control" required maxlength="50">
+                        </div>
+                        <div class="mb-3">
+                            <label for="passwordUsuario" class="form-label">Contraseña</label>
+                            <input id="passwordUsuario" name="password" type="password" class="form-control" minlength="6">
+                            <div class="form-text" id="ayudaPassword">Mínimo 6 caracteres.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rolUsuario" class="form-label">Rol</label>
+                            <select id="rolUsuario" name="rol" class="form-select" required>
+                                {% if session.get('rol') == 'superadmin' %}
+                                    <option value="superadmin">Superadministrador</option>
+                                {% endif %}
+                                <option value="admin">Administrador</option>
+                                <option value="supervisor">Supervisor</option>
+                                <option value="operador">Operador</option>
+                            </select>
+                        </div>
+                        <div class="form-check d-none" id="contenedorEstadoUsuario">
+                            <input id="estadoUsuario" name="estado" value="1" type="checkbox" class="form-check-input">
+                            <label for="estadoUsuario" class="form-check-label">Usuario activo</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+{% endblock %}
 
-    {% if usuarios.pages > 1 %}
-    <nav>
-        <ul class="pagination">
-            {% for p in usuarios.iter_pages() %}
-            <li class="page-item {{ 'active' if p == usuarios.page else '' }}">
-                <a class="page-link" href="{{ url_for('usuario.listar', page=p, q=busqueda) }}">{{ p }}</a>
-            </li>
-            {% endfor %}
-        </ul>
-    </nav>
-    {% endif %}
-</div>
+{% block extra_js %}
+    <script>
+        const formUsuario = document.getElementById("formUsuario");
+        const tituloModalUsuario = document.getElementById("tituloModalUsuario");
+        const passwordUsuario = document.getElementById("passwordUsuario");
+        const ayudaPassword = document.getElementById("ayudaPassword");
+        const contenedorEstadoUsuario = document.getElementById("contenedorEstadoUsuario");
+        const estadoUsuario = document.getElementById("estadoUsuario");
+
+        function prepararNuevoUsuario() {
+            formUsuario.reset();
+            formUsuario.action = "{{ url_for('usuario.crear') }}";
+            tituloModalUsuario.textContent = "Nuevo usuario";
+            passwordUsuario.required = true;
+            ayudaPassword.textContent = "Mínimo 6 caracteres.";
+            contenedorEstadoUsuario.classList.add("d-none");
+        }
+
+        function prepararEditarUsuario(boton) {
+            const {
+                id,
+                nombre,
+                usuario,
+                rol,
+                estado
+            } = boton.dataset;
+            formUsuario.reset();
+            formUsuario.action = `/usuarios/editar/${id}`;
+            tituloModalUsuario.textContent = "Editar usuario";
+            document.getElementById("nombreUsuario").value = nombre;
+            document.getElementById("loginUsuario").value = usuario;
+            document.getElementById("rolUsuario").value = rol;
+            estadoUsuario.checked = Boolean(estado);
+            passwordUsuario.required = false;
+            ayudaPassword.textContent = "Déjala vacía para conservar la contraseña actual.";
+            contenedorEstadoUsuario.classList.remove("d-none");
+        }
+    </script>
 {% endblock %}

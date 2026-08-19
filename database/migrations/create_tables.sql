@@ -31,32 +31,3 @@ CREATE TABLE trabajador (
   cargo varchar(100) DEFAULT NULL,
   estado tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
--- ALTER
-
-ALTER TABLE asistencia
-    ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ADD COLUMN updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-        ON UPDATE CURRENT_TIMESTAMP,
-    ADD COLUMN created_by INT DEFAULT NULL,
-    ADD COLUMN updated_by INT DEFAULT NULL;
-
-ALTER TABLE asistencia
-    ADD CONSTRAINT fk_asistencia_trabajador
-        FOREIGN KEY (trabajador_id)
-        REFERENCES Trabajadores(id)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-
-    ADD CONSTRAINT fk_asistencia_created_by
-        FOREIGN KEY (created_by)
-        REFERENCES Usuarios(id)
-        ON UPDATE CASCADE
-        ON DELETE SET NULL,
-
-    ADD CONSTRAINT fk_asistencia_updated_by
-        FOREIGN KEY (updated_by)
-        REFERENCES Usuarios(id)
-        ON UPDATE CASCADE
-        ON DELETE SET NULL;

@@ -28,11 +28,6 @@ ALTER TABLE asistencia
 
 
 ALTER TABLE trabajador
-	MODIFY COLUMN estado ENUM(
-    	'admin',
-        'supervisor',
-        'operador'
-	) NOT NULL DEFAULT 'operador',
     ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ADD COLUMN updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
@@ -52,3 +47,36 @@ ALTER TABLE asistencia
         REFERENCES usuario(id)
         ON UPDATE CASCADE
         ON DELETE SET NULL;
+
+ALTER TABLE usuario
+    MODIFY COLUMN rol ENUM(
+        'superadmin',
+        'admin',
+        'supervisor',
+        'operador'
+    ) NOT NULL DEFAULT 'operador',
+
+    ADD COLUMN created_by INT NULL AFTER estado,
+    ADD COLUMN updated_by INT NULL AFTER created_by,
+
+    ADD COLUMN created_at TIMESTAMP NOT NULL
+        DEFAULT CURRENT_TIMESTAMP
+        AFTER updated_by,
+
+    ADD COLUMN updated_at TIMESTAMP NOT NULL
+        DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+        AFTER created_at,
+
+    ADD COLUMN deleted_by INT NULL AFTER updated_at,
+    ADD COLUMN deleted_at DATETIME NULL AFTER deleted_by,
+    ADD CONSTRAINT fk_usuario_created_by
+        FOREIGN KEY (created_by) REFERENCES usuario(id),
+
+    ADD CONSTRAINT fk_usuario_updated_by
+        FOREIGN KEY (updated_by) REFERENCES usuario(id),
+
+    ADD CONSTRAINT fk_usuario_deleted_by
+        FOREIGN KEY (deleted_by) REFERENCES usuario(id),
+    ADD CONSTRAINT uq_usuario_usuario UNIQUE (usuario);
+

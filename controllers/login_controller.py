@@ -34,7 +34,7 @@ def authenticate():
     session["usuario"] = usuario.usuario
     session["rol"] = usuario.rol
 
-    return redirect(url_for("trabajador.vista_trabajadores"))
+    return redirect(url_for("dashboard"))
 
 
 def controller_logout():

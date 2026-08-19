@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, session, redirect, url_for
+from utils.decorators import login_required, admin_required
 from controllers.trabajador_controller import (
     listar_trabajadores, listar_inactivos, crear_trabajador,
     actualizar_trabajador, eliminar_trabajador, reactivar_trabajador
@@ -8,11 +9,9 @@ trabajador_bp = Blueprint("trabajador", __name__)
 
 
 @trabajador_bp.route("/trabajadores", methods=["GET"])
+@login_required
+@admin_required
 def vista_trabajadores():
-    if not session.get("usuario_id"):
-        return redirect(url_for("login.login"))
-    if session.get("rol") != "admin":
-        return "No autorizado", 403
     return render_template("trabajadores/index.html")
 
 
