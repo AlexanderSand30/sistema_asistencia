@@ -1,80 +1,218 @@
-/* ===== Login responsivo ===== */
-.login-wrapper {
-    display: flex;
-    height: 100vh;
+/* ===== Login responsivo mejorado ===== */
+:root {
+    --brand-dark: #0a1454;
+    --brand-accent: #3ba9e8;
+    --brand-accent-hover: #2f8fc7;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.login-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ---------- Panel de marca ---------- */
 .login-brand {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #0a1454;
+    text-align: center;
+    background: linear-gradient(160deg, var(--brand-dark) 0%, #162a7a 100%);
     color: #fff;
-    padding: 1.5rem;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-brand::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(59, 169, 232, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(59, 169, 232, 0.1) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 .login-brand img {
     width: 200px;
     max-width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
 }
 
+.login-brand p {
+    position: relative;
+    z-index: 1;
+    font-size: 1rem;
+    opacity: 0.85;
+    max-width: 320px;
+    line-height: 1.5;
+}
+
+/* ---------- Panel de formulario ---------- */
 .login-form-panel {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #f4f6f8;
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
 }
 
-.login-form-panel .btn-primary {
-    background-color: #3ba9e8;
-    border-color: #3ba9e8;
+.login-form-panel .card {
+    width: 100%;
+    max-width: 380px;
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 10px 40px rgba(10, 20, 84, 0.1);
+    animation: fadeInUp 0.4s ease;
 }
 
-.login-form-panel .btn-primary:hover {
-    background-color: #2f8fc7;
-    border-color: #2f8fc7;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-form-panel .card-body {
+    padding: 2.25rem 2rem !important;
+}
+
+.login-form-panel h5 {
+    font-weight: 600;
+    color: var(--brand-dark);
+    font-size: 1.35rem;
+}
+
+.login-form-panel label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #444;
+    margin-bottom: 0.35rem;
+}
+
+.login-form-panel .form-control {
+    padding: 0.65rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid #dde1e6;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-form-panel .input-group .form-control {
+    border-left: none;
+}
+
+.login-form-panel .input-group-text {
+    background-color: #fff;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    color: #8a93a3;
 }
 
 .login-form-panel .form-control:focus {
-    border-color: #3ba9e8;
-    box-shadow: 0 0 0 0.2rem rgba(59, 169, 232, 0.25);
+    border-color: var(--brand-accent);
+    box-shadow: 0 0 0 0.2rem rgba(59, 169, 232, 0.2);
 }
 
-/* Movil: apilar logo arriba del formulario, mas compacto */
+.login-form-panel .input-group:focus-within .input-group-text {
+    border-color: var(--brand-accent);
+}
+
+.login-form-panel .btn-primary {
+    background-color: var(--brand-accent);
+    border-color: var(--brand-accent);
+    padding: 0.7rem;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.login-form-panel .btn-primary:hover {
+    background-color: var(--brand-accent-hover);
+    border-color: var(--brand-accent-hover);
+}
+
+.login-form-panel .btn-primary:active {
+    transform: scale(0.98);
+}
+
+.toggle-password {
+    cursor: pointer;
+    background-color: #fff;
+    border-left: none;
+}
+
+/* ---------- Tablet ---------- */
+@media (max-width: 991px) {
+    .login-brand img {
+        width: 160px;
+    }
+}
+
+/* ---------- Movil: apilar logo arriba del formulario ---------- */
 @media (max-width: 767px) {
     .login-wrapper {
         flex-direction: column;
-        height: auto;
         min-height: 100vh;
     }
 
     .login-brand {
         flex: none;
-        padding: 1.5rem 1rem 1rem;
+        padding: 2rem 1.25rem 1.25rem;
     }
 
     .login-brand img {
-        width: 110px;
+        width: 100px;
         margin-bottom: 0.5rem;
     }
 
     .login-brand p {
-        font-size: 0.9rem;
-        margin-bottom: 0;
+        font-size: 0.85rem;
     }
 
     .login-form-panel {
-        flex: none;
-        padding: 1.5rem 1rem 2rem;
+        flex: 1;
+        padding: 1.5rem 1.25rem 2.5rem;
+        align-items: flex-start;
     }
 
     .login-form-panel .card {
-        width: 100% !important;
-        max-width: 360px;
+        max-width: 100%;
+    }
+
+    .login-form-panel .card-body {
+        padding: 1.75rem 1.5rem !important;
+    }
+}
+
+/* ---------- Movil muy pequeño ---------- */
+@media (max-width: 380px) {
+    .login-brand {
+        padding: 1.5rem 1rem 1rem;
+    }
+
+    .login-form-panel .card-body {
+        padding: 1.5rem 1.25rem !important;
     }
 }
