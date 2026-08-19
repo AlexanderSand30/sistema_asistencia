@@ -10,7 +10,7 @@ asistencia_bp = Blueprint("asistencia", __name__)
 @asistencia_bp.route("/asistencia", methods=["GET"])
 def vista_asistencia():
     if not session.get("usuario_id"):
-        return redirect(url_for("usuario.login"))
+        return redirect(url_for("login.login"))
     return render_template("asistencia/index.html")
 
 

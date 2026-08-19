@@ -9,7 +9,7 @@ produccion_bp = Blueprint("produccion", __name__)
 @produccion_bp.route("/produccion", methods=["GET"])
 def vista_produccion():
     if not session.get("usuario_id"):
-        return redirect(url_for("usuario.login"))
+        return redirect(url_for("login.login"))
     if session.get("rol") != "admin":
         return "No autorizado", 403
     return render_template("produccion/index.html")

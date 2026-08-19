@@ -7,31 +7,13 @@ from flask import (
     url_for,
     jsonify,
 )
-from utils.decorators import no_cache, login_required
-from controllers.login_controller import authenticate, controller_logout
+from utils.decorators import login_required
 from controllers.usuario_controller import UsuarioController
 
-usuario_bp = Blueprint("usuario", __name__, url_prefix="/")
+usuario_bp = Blueprint("usuario", __name__, url_prefix="/usuarios")
 
 
-@usuario_bp.route("/login", methods=["GET", "POST"])
-@no_cache
-def login():
-    if request.method == "POST":
-        return authenticate()
-
-    if session.get("usuario_id"):
-        return redirect(url_for("trabajador.vista_trabajadores"))
-    return render_template("login.html")
-
-
-@usuario_bp.route("/logout")
-@login_required
-def logout():
-    return controller_logout()
-
-
-@usuario_bp.route("usuarios/")
+@usuario_bp.route("/")
 @login_required
 # @admin_required
 def listar():

@@ -7,7 +7,7 @@ reporte_bp = Blueprint("reporte", __name__)
 @reporte_bp.route("/reportes", methods=["GET"])
 def vista_reportes():
     if not session.get("usuario_id"):
-        return redirect(url_for("usuario.login"))
+        return redirect(url_for("login.login"))
     return render_template("reportes/index.html")
 
 

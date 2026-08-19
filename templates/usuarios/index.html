@@ -2,7 +2,7 @@
 
 <!-- CABECERA -->
 {% block content %}
-<div class="container mt-4">
+<div>
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="text-uppercase fw-bold">Gestión de Usuarios</h4>
         <a href="{{ url_for('usuario.crear') }}" class="btn btn-primary">
@@ -14,33 +14,35 @@
         <input type="text" name="q" value="{{ busqueda }}" class="form-control" placeholder="Buscar por usuario, nombre o email...">
     </form>
 
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
+    <div class="table-responsive overflow-auto">
+        <table class="table table-hover align-middle table-mobile-cards">
             <thead>
                 <tr>
                     <th>Usuario</th>
                     <th>Nombre completo</th>
-                    <th>Email</th>
                     <th>Rol</th>
                     <th>Estado</th>
                     <th>Último acceso</th>
-                    <th class="text-end">Acciones</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="cuerpoTabla">
                 {% for u in usuarios.items %}
                 <tr>
                     <td>{{ u.usuario }}</td>
                     <td>{{ u.nombre }}</td>
-                    <td>{{ u.email }}</td>
-                    <td><span class="badge bg-{{ 'dark' if u.rol == 'admin' else 'secondary' }}">{{ u.rol }}</span></td>
-                    <td>
+                    <td class="text-uppercase">
+                        <span class="badge bg-{{ 'dark' if u.rol == 'admin' else 'secondary' }}">
+                            {{ u.rol }}
+                        </span>
+                    </td>
+                    <td class="text-uppercase">
                         <span class="badge bg-{{ 'success' if u.activo else 'danger' }}">
                             {{ 'Activo' if u.activo else 'Inactivo' }}
                         </span>
                     </td>
                     <td>{{ u.ultimo_acceso.strftime('%Y-%m-%d %H:%M') if u.ultimo_acceso else '—' }}</td>
-                    <td class="text-end">
+                    <td class="text-center">
                         <a href="{{ url_for('usuario.editar', id=u.id) }}" class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-pencil"></i>
                         </a>

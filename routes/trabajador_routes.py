@@ -10,7 +10,7 @@ trabajador_bp = Blueprint("trabajador", __name__)
 @trabajador_bp.route("/trabajadores", methods=["GET"])
 def vista_trabajadores():
     if not session.get("usuario_id"):
-        return redirect(url_for("usuario.login"))
+        return redirect(url_for("login.login"))
     if session.get("rol") != "admin":
         return "No autorizado", 403
     return render_template("trabajadores/index.html")

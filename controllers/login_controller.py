@@ -39,4 +39,4 @@ def authenticate():
 
 def controller_logout():
     session.clear()
-    return redirect(url_for("usuario.login"))
+    return redirect(url_for("login.login"))

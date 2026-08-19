@@ -25,7 +25,7 @@ def login_required(f):
     def decorated(*args, **kwargs):
         if "usuario_id" not in session:
             flash("Debes iniciar sesión para acceder.", "warning")
-            return redirect(url_for("usuario.login"))
+            return redirect(url_for("login.login"))
         return f(*args, **kwargs)
 
     return decorated
@@ -36,7 +36,7 @@ def admin_required(f):
     def decorated(*args, **kwargs):
         if session.get("rol") != "admin":
             flash("No tienes permisos para acceder a esta sección.", "danger")
-            return redirect(url_for("usuario.login"))
+            return redirect(url_for("login.login"))
         return f(*args, **kwargs)
 
     return decorated

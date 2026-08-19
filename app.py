@@ -3,6 +3,7 @@ from flask import Flask, redirect, url_for, session
 from config.database import Config
 from config.extensions import db
 
+from routes.login_routes import login_bp
 from routes.usuario_routes import usuario_bp
 from routes.trabajador_routes import trabajador_bp
 from routes.asistencia_routes import asistencia_bp
@@ -16,6 +17,7 @@ app.config.from_object(Config)
 db.init_app(app)
 
 
+app.register_blueprint(login_bp)
 app.register_blueprint(usuario_bp)
 app.register_blueprint(trabajador_bp)
 app.register_blueprint(asistencia_bp)
@@ -27,7 +29,7 @@ app.register_blueprint(produccion_bp)
 def index():
 
     if not session.get("usuario_id"):
-        return redirect(url_for("usuario.login"))
+        return redirect(url_for("login.login"))
 
     if session.get("rol") == "admin":
         return redirect(url_for("trabajador.vista_trabajadores"))
