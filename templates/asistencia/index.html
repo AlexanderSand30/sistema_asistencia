@@ -16,23 +16,43 @@
         </div>
     </div>
 
-    <!-- BUSCAR TRABAJADOR -->
-    <div class="card card-soft mb-4">
-        <div class="card-body">
+    <!-- REGISTRAR ASISTENCIA -->
+    <div class="d-flex justify-content-end mb-4">
+        <button class="btn btn-success-modern" type="button" data-bs-toggle="modal" data-bs-target="#modalRegistrarAsistencia">
+            <i class="bi bi-camera-fill me-2"></i>
+            Registrar asistencia
+        </button>
+    </div>
+
+    <div class="modal fade" id="modalRegistrarAsistencia" tabindex="-1" aria-labelledby="tituloModalRegistrarAsistencia" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <div>
+                        <h5 class="modal-title fw-bold" id="tituloModalRegistrarAsistencia">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            Registrar asistencia
+                        </h5>
+                        <small class="text-muted">Confirma el trabajador y la obra</small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body">
             <div class="row g-2 align-items-end mb-2">
                 <div class="col-md-5 col-lg-4 d-none" id="busquedaTrabajador">
                     <label class="form-label small text-muted mb-1">Buscar por DNI</label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">
-                            <i class="bi bi-person"></i>
+                            <i class="bi bi-person fs-6"></i>
                         </span>
                         <input type="text" id="dniBuscar" class="form-control form-control-sm" maxlength="8" inputmode="numeric" placeholder="Ingrese DNI" />
                     </div>
                 </div>
 
                 <div class="col-md-auto d-none" id="contenedorBotonBuscar">
-                    <button class="btn btn-primary-modern" id="btnBuscar">
-                        <i class="bi bi-search me-1"></i>
+                    <button class="btn btn-sm btn-primary-modern" id="btnBuscar">
+                        <i class="bi bi-search fs-6 me-1"></i>
                         Buscar trabajador
                     </button>
                 </div>
@@ -92,6 +112,9 @@
                     </button>
                 </div>
 
+            </div>
+        </div>
+                </div>
             </div>
         </div>
     </div>
