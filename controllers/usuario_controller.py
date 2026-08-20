@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import session
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
+from werkzeug.security import check_password_hash
 
 from config.constants import ROLES, PASSWORD_MIN_LENGTH
 from models.usuario import db, Usuario
@@ -106,6 +107,51 @@ class UsuarioController:
     @staticmethod
     def obtener_por_id(id):
         return Usuario.query.get_or_404(id)
+
+    @staticmethod
+    def obtener_perfil():
+        return Usuario.query.get_or_404(session.get("usuario_id"))
+
+    @staticmethod
+    def cambiar_password(usuario, password_actual, password_nueva):
+        if not check_password_hash(usuario.password, password_actual):
+            return "La contraseña actual no es correcta."
+        if len(password_nueva) < PASSWORD_MIN_LENGTH:
+            return f"La nueva contraseña debe tener al menos {PASSWORD_MIN_LENGTH} caracteres."
+
+        usuario.set_password(password_nueva)
+        usuario.updated_by = usuario.id
+        db.session.commit()
+        return None
+
+    @staticmethod
+    def actualizar_perfil(usuario, nro_documento, nombre, nombre_usuario):
+        nro_documento = nro_documento.strip()
+        nombre = nombre.strip()
+        nombre_usuario = nombre_usuario.strip()
+
+        if not nombre or not nombre_usuario:
+            return "El nombre y el usuario son obligatorios."
+        if UsuarioController._usuario_existe(nombre_usuario, excluir_id=usuario.id):
+            return "Ese nombre de usuario ya está en uso."
+        if len(nro_documento) != 8 or not nro_documento.isdigit():
+            return "El número de documento debe tener exactamente 8 dígitos."
+        if UsuarioController._documento_existe(nro_documento, excluir_id=usuario.id):
+            return "Ese número de documento ya está en uso."
+
+        valido, error = UsuarioController._trabajador_valido(nro_documento)
+        if not valido:
+            return error
+
+        usuario.nro_documento = nro_documento
+        usuario.nombre = nombre
+        usuario.usuario = nombre_usuario
+        usuario.updated_by = usuario.id
+        db.session.commit()
+
+        session["nombre"] = usuario.nombre
+        session["usuario"] = usuario.usuario
+        return None
 
     # ---------- CREAR ----------
     @staticmethod

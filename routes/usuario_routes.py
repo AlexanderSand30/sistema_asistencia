@@ -3,6 +3,7 @@ from flask import (
     render_template,
     request,
     redirect,
+    session,
     url_for,
     flash,
 )
@@ -12,6 +13,50 @@ from utils.decorators import login_required, admin_required
 from controllers.usuario_controller import UsuarioController
 
 usuario_bp = Blueprint("usuario", __name__, url_prefix="/usuarios")
+
+
+@usuario_bp.route("/perfil", methods=["GET", "POST"])
+@login_required
+def perfil():
+    usuario = UsuarioController.obtener_perfil()
+    es_privilegiado = session.get("rol") in ("admin", "superadmin")
+
+    if request.method == "POST":
+        accion = request.form.get("accion")
+        if accion == "password":
+            password_nueva = request.form.get("password_nueva", "")
+            password_confirmacion = request.form.get("password_confirmacion", "")
+            if password_nueva != password_confirmacion:
+                flash("Las nuevas contraseñas no coinciden.", "danger")
+                return redirect(url_for("usuario.perfil"))
+
+            error = UsuarioController.cambiar_password(
+                usuario,
+                request.form.get("password_actual", ""),
+                password_nueva,
+            )
+            if error:
+                flash(error, "danger")
+            else:
+                flash("Contraseña actualizada correctamente.", "success")
+        elif accion == "datos" and es_privilegiado:
+            error = UsuarioController.actualizar_perfil(
+                usuario,
+                request.form.get("nro_documento", ""),
+                request.form.get("nombre", ""),
+                request.form.get("usuario", ""),
+            )
+            if error:
+                flash(error, "danger")
+            else:
+                flash("Perfil actualizado correctamente.", "success")
+        else:
+            flash("No tienes permisos para realizar esa acción.", "danger")
+        return redirect(url_for("usuario.perfil"))
+
+    return render_template(
+        "usuarios/perfil.html", usuario=usuario, es_privilegiado=es_privilegiado
+    )
 
 
 @usuario_bp.route("/")

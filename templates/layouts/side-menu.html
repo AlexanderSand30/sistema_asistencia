@@ -75,6 +75,10 @@
                         <span>Usuarios</span>
                     </a>
                 {% endif %}
+                <a href="{{ url_for('usuario.perfil') }}" class="nav-link {% if request.path.startswith('/usuarios/perfil') %}active{% endif %}">
+                    <i class="bi bi-person-circle"></i>
+                    <span>Mi perfil</span>
+                </a>
                 <a href="/logout" class="nav-link logout">
                     <i class="bi bi-door-closed"></i>
                     <span>Cerrar Sesión</span>
@@ -97,12 +101,12 @@
                 </button>
 
                 <div class="top-bar-user">
-                    <div class="user-avatar">
+                    <a href="{{ url_for('usuario.perfil') }}" class="user-avatar text-decoration-none" title="Mi perfil" aria-label="Mi perfil">
                         <i class="bi bi-person-fill"></i>
-                    </div>
+                    </a>
                     <div class="user-info">
                         <span class="user-label">Usuario </span>
-                        <strong> {{ session.get('nombre', '') }}</strong>
+                        <a href="{{ url_for('usuario.perfil') }}" class="text-decoration-none text-reset"><strong>{{ session.get('nombre', '') }}</strong></a>
                     </div>
                 </div>
             </header>
