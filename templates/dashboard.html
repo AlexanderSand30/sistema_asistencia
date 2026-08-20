@@ -1,1 +1,299 @@
 {% extends "layouts/side-menu.html" %}
+{% block extra_css %}
+    <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid px-0">
+        <!-- ENCABEZADO -->
+        <div class="dashboard-header mb-3">
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                <div>
+                    <div class="small fw-semibold text-white-50 text-uppercase mb-1">
+                        <i class="bi bi-grid-1x2-fill me-1"></i>
+                        Panel principal
+                    </div>
+                    <h2 class="fw-bold mb-1">
+                        Hola, {{ session.get('nombre') or 'usuario' }} 👋
+                    </h2>
+                    <p class="mb-0 small text-white-50">
+                        Consulta rápidamente el estado y la actividad del sistema.
+                    </p>
+                </div>
+
+                <span class="badge rounded-pill role-badge px-3 py-2">
+                    <i class="bi bi-shield-check me-1"></i>
+                    {{ rol }}
+                </span>
+
+            </div>
+
+        </div>
+
+        {% if es_administrador %}
+            <!-- ADMINISTRADOR -->
+            <div class="d-flex justify-content-between align-items-end mb-2">
+                <div>
+                    <div class="section-title">Resumen</div>
+                    <h5 class="section-heading">Estado del sistema</h5>
+                </div>
+                <span class="small text-muted">
+                    <i class="bi bi-clock me-1"></i>
+                    Actualizado
+                </span>
+            </div>
+
+
+            {% set tarjetas = [
+                     {
+                         'titulo': 'Trabajadores activos',
+                         'valor': metricas.trabajadores_activos,
+                         'icono': 'bi-people-fill',
+                         'color': 'primary',
+                         'nota': 'Personal disponible'
+                     },
+                     {
+                         'titulo': 'Trabajadores inactivos',
+                         'valor': metricas.trabajadores_inactivos,
+                         'icono': 'bi-person-dash',
+                         'color': 'secondary',
+                         'nota': 'Registros suspendidos'
+                     },
+                     {
+                         'titulo': 'Usuarios activos',
+                         'valor': metricas.usuarios_activos,
+                         'icono': 'bi-person-check-fill',
+                         'color': 'success',
+                         'nota': 'Cuentas habilitadas'
+                     },
+                     {
+                         'titulo': 'Asistencias de hoy',
+                         'valor': metricas.asistencias_hoy,
+                         'icono': 'bi-calendar-check-fill',
+                         'color': 'warning',
+                         'nota': 'Marcaciones registradas'
+                     }
+                ] %}
+
+            <!-- Estadísticas -->
+            <div class="row g-3">
+                {% for t in tarjetas %}
+                    <div class="col-6 col-xl-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="stat-icon soft-{{ t.color }}">
+                                        <i class="bi {{ t.icono }}"></i>
+                                    </div>
+                                    <i class="bi bi-three-dots text-muted"></i>
+                                </div>
+                                <div class="stat-label mb-1">
+                                    {{ t.titulo }}
+                                </div>
+                                <div class="stat-value fw-bold mb-1">
+                                    {{ t.valor }}
+                                </div>
+                                <div class="stat-note">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    {{ t.nota }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+
+            <!-- INFORMACIÓN INFERIOR -->
+            <div class="row g-3 mt-1">
+                <!-- Actividad -->
+                <div class="col-lg-8">
+                    <div class="card profile-card h-100">
+                        <div class="card-body">
+                            <div class="section-title mb-1">
+                                <i class="bi bi-activity me-1"></i>
+                                Actividad
+                            </div>
+                            <h5 class="section-heading mb-3">
+                                Resumen de actividad
+                            </h5>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <div class="activity-item">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="stat-icon soft-success">
+                                                <i class="bi bi-person-check-fill"></i>
+                                            </div>
+                                            <div>
+                                                <div class="small text-muted">
+                                                    Personal disponible
+                                                </div>
+                                                <div class="fw-bold">
+                                                    {{ metricas.trabajadores_activos }}
+                                                    trabajadores
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="activity-item">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="stat-icon soft-warning">
+                                                <i class="bi bi-calendar-check-fill"></i>
+                                            </div>
+                                            <div>
+                                                <div class="small text-muted">
+                                                    Asistencia de hoy
+                                                </div>
+                                                <div class="fw-bold">
+                                                    {{ metricas.asistencias_hoy }}
+                                                    marcaciones
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sesión -->
+                <div class="col-lg-4">
+                    <div class="card profile-card h-100">
+                        <div class="card-body">
+                            <div class="section-title mb-1">
+                                <i class="bi bi-shield-check me-1"></i>
+                                Acceso
+                            </div>
+                            <h5 class="section-heading mb-3">Tu sesión</h5>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="profile-avatar">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="fw-bold text-truncate">
+                                        {{ session.get('nombre') or 'Usuario' }}
+                                    </div>
+                                    <div class="small text-muted text-capitalize">
+                                        {{ rol }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+
+            <!-- USUARIO NORMAL -->
+            <div class="d-flex justify-content-between align-items-end mb-2">
+                <div>
+                    <div class="section-title">Mi información</div>
+                    <h5 class="section-heading">Resumen personal</h5>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <!-- Trabajador -->
+                <div class="col-lg-6">
+                    <div class="card profile-card h-100">
+                        <div class="card-body">
+                            {% if metricas.trabajador %}
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="profile-avatar">
+                                        <i class="bi bi-person-badge-fill"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="section-title mb-1">
+                                            Trabajador asignado
+                                        </div>
+                                        <h5 class="fw-bold mb-0 text-truncate">
+                                            {{ metricas.trabajador.nombres }}
+                                            {{ metricas.trabajador.apellidos }}
+                                        </h5>
+
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                    <span class="badge rounded-pill bg-light text-dark px-3 py-2">
+                                        <i class="bi bi-person-vcard me-1"></i>
+                                        DNI {{ metricas.trabajador.dni }}
+                                    </span>
+                                    <span class="badge rounded-pill bg-primary-subtle text-primary px-3 py-2">
+                                        <i class="bi bi-briefcase me-1"></i>
+                                        {{ metricas.trabajador.cargo or 'Sin cargo' }}
+                                    </span>
+                                </div>
+
+                                <div class="small text-success">
+                                    <i class="bi bi-check-circle-fill me-1"></i>
+                                    Trabajador vinculado correctamente
+                                </div>
+                            {% else %}
+                                <div class="empty-state">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="empty-state-icon">
+                                            <i class="bi bi-person-exclamation"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold mb-1">
+                                                Sin trabajador asignado
+                                            </div>
+                                            <div class="small text-muted">
+                                                Solicita al administrador vincular tu trabajador.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Asistencias -->
+                {% set tarjetas = [
+                                                                                                        {
+                                                                                                            'titulo': 'Mis asistencias',
+                                                                                                            'valor': metricas.mis_asistencias,
+                                                                                                            'icono': 'bi-clipboard-check-fill',
+                                                                                                            'color': 'success',
+                                                                                                            'nota': 'Total registrado'
+                                                                                                        },
+                                                                                                        {
+                                                                                                            'titulo': 'Hoy',
+                                                                                                            'valor': metricas.mis_asistencias_hoy,
+                                                                                                            'icono': 'bi-calendar-day-fill',
+                                                                                                            'color': 'warning',
+                                                                                                            'nota': 'Mis marcaciones'
+                                                                                                        }
+                                                                                                    ] %}
+
+                {% for t in tarjetas %}
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="stat-icon soft-{{ t.color }} mb-3">
+                                    <i class="bi {{ t.icono }}"></i>
+                                </div>
+                                <div class="stat-label mb-1">
+                                    {{ t.titulo }}
+                                </div>
+                                <div class="stat-value fw-bold mb-1">
+                                    {{ t.valor }}
+                                </div>
+                                <div class="stat-note">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    {{ t.nota }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

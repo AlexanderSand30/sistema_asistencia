@@ -2,6 +2,7 @@ from flask import Flask, redirect, render_template, url_for, session
 
 from config.database import Config
 from config.extensions import db
+from controllers.dashboard_controller import obtener_datos_dashboard
 
 from routes.login_routes import login_bp
 from routes.usuario_routes import usuario_bp
@@ -39,7 +40,7 @@ def dashboard():
     if not session.get("usuario_id"):
         return redirect(url_for("login.login"))
 
-    return render_template("dashboard.html")
+    return render_template("dashboard.html", **obtener_datos_dashboard())
 
 
 if __name__ == "__main__":

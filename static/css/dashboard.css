@@ -1,0 +1,196 @@
+.dashboard-header {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    border-radius: 18px;
+    padding: 1.5rem 1.75rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(13, 110, 253, .14);
+}
+
+.dashboard-header::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    right: -60px;
+    top: -80px;
+    background: rgba(255, 255, 255, .08);
+    border-radius: 50%;
+}
+
+.dashboard-header::before {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    right: 90px;
+    bottom: -70px;
+    background: rgba(255, 255, 255, .06);
+    border-radius: 50%;
+}
+
+.dashboard-header>div {
+    position: relative;
+    z-index: 2;
+}
+
+.dashboard-header h2 {
+    font-size: 1.5rem;
+}
+
+.role-badge {
+    background: rgba(255, 255, 255, .16);
+    border: 1px solid rgba(255, 255, 255, .25);
+    color: #fff;
+    backdrop-filter: blur(8px);
+    font-size: .72rem;
+    letter-spacing: .04em;
+}
+
+.section-title {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    font-weight: 700;
+    color: #8a94a6;
+}
+
+.section-heading {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+/* Tarjetas estadísticas */
+.stat-card {
+    border: 0;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .055);
+    transition: transform .2s ease, box-shadow .2s ease;
+    overflow: hidden;
+    height: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .09);
+}
+
+.stat-card .card-body {
+    padding: 1.15rem;
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    line-height: 1;
+    letter-spacing: -.03em;
+}
+
+.stat-label {
+    font-size: .82rem;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.stat-note {
+    font-size: .72rem;
+    color: #8a94a6;
+}
+
+.soft-primary {
+    background: rgba(13, 110, 253, .10);
+    color: #0d6efd;
+}
+
+.soft-success {
+    background: rgba(25, 135, 84, .10);
+    color: #198754;
+}
+
+.soft-warning {
+    background: rgba(255, 193, 7, .15);
+    color: #a97900;
+}
+
+.soft-secondary {
+    background: rgba(108, 117, 125, .10);
+    color: #6c757d;
+}
+
+/* Tarjetas generales */
+.profile-card {
+    border: 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .055);
+    background: #fff;
+}
+
+.profile-card .card-body {
+    padding: 1.15rem;
+}
+
+.profile-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0d6efd, #6610f2);
+    color: #fff;
+    font-size: 1.35rem;
+    flex-shrink: 0;
+}
+
+.activity-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: .75rem;
+}
+
+.empty-state {
+    background: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    border-radius: 12px;
+    padding: .9rem;
+}
+
+.empty-state-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 193, 7, .15);
+    color: #a97900;
+    flex-shrink: 0;
+}
+
+@media (max-width: 767.98px) {
+    .dashboard-header {
+        padding: 1.25rem;
+        border-radius: 15px;
+    }
+
+    .dashboard-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .stat-value {
+        font-size: 1.6rem;
+    }
+}

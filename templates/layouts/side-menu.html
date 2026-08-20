@@ -106,7 +106,9 @@
                     </a>
                     <div class="user-info">
                         <span class="user-label">Usuario </span>
-                        <a href="{{ url_for('usuario.perfil') }}" class="text-decoration-none text-reset"><strong>{{ session.get('nombre', '') }}</strong></a>
+                        <a href="{{ url_for('usuario.perfil') }}" class="text-decoration-none text-reset">
+                            <strong class="text-uppercase">{{ session.get('usuario', '') }}</strong>
+                        </a>
                     </div>
                 </div>
             </header>
