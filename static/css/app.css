@@ -8,6 +8,10 @@
     --text-secondary: #6b7280;
     --border-color: #e5e7eb;
     --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.04);
+    --asist-primary: #4f46e5;
+    --asist-primary-dark: #4338ca;
+    --asist-success: #16a34a;
+    --asist-radius: 16px;
 }
 
 * {
@@ -111,6 +115,12 @@ body {
 /* =========================================
    CARD
 ========================================= */
+.card-header-modern {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #f1f2f6;
+    background: transparent;
+}
+
 .card-soft {
     border: 1px solid rgba(13, 110, 253, 0.12);
     border-radius: 16px;
@@ -231,34 +241,101 @@ body {
 }
 
 /* =========================================
-   SECTION
+   BTN MODERN
 ========================================= */
+.btn-primary-modern {
+    background: var(--asist-primary);
+    border: none;
+    color: #fff;
+    border-radius: 10px;
+    padding: .5rem 1rem;
+    font-weight: 600;
+    transition: background .15s ease;
+}
 
+.btn-primary-modern:hover {
+    background: var(--asist-primary-dark);
+    color: #fff;
+}
 
+.btn-success-modern {
+    background: var(--asist-success);
+    border: none;
+    color: #fff;
+    border-radius: 10px;
+    padding: .5rem 1.25rem;
+    font-weight: 600;
+}
 
+.btn-success-modern:hover {
+    background: #15803d;
+    color: #fff;
+}
 
+.btn-outline-modern {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    border-radius: 10px;
+    padding: .5rem 1rem;
+    font-weight: 500;
+}
 
+.btn-outline-modern:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
 
-
-
-
-
-
-
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
 
 /* =========================================
-   SECTION
+   CAMERA
+========================================= */
+.camera-container {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #0f172a;
+}
+
+.camera-video {
+    width: 100%;
+    border-radius: 14px;
+}
+
+.camera-frame-overlay {
+    position: absolute;
+    inset: 12px;
+    border: 2px dashed rgba(255, 255, 255, .35);
+    border-radius: 10px;
+    pointer-events: none;
+}
+
+/* =========================================
+   TABLE
 ========================================= */
 .table thead th {
     vertical-align: middle;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.85rem;
     letter-spacing: 0.03em;
     text-transform: uppercase;
+    border-bottom: 1px solid #eef0f4;
+    color: #c0c0c0;
+    padding: .9rem 1rem;
 }
 
 .table tbody tr {
     transition: background-color 0.15s ease-in-out;
+}
+
+.table tbody td {
+    /* padding: .85rem 1rem; */
+    vertical-align: middle;
 }
 
 .table tbody td:first-child {
@@ -271,15 +348,43 @@ body {
     overflow: hidden;
 }
 
+/* =========================================
+   BADGE
+========================================= */
+.section-icon-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2ff;
+    color: var(--asist-primary);
+    flex-shrink: 0;
+}
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.status-success {
+    background: #ecfdf5;
+    color: #16a34a;
+}
+
+
+
+
+
 .pagination .page-link {
     min-width: 42px;
     text-align: center;
-}
-
-.btn-icon {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
 }
 
 .estado-vacio {

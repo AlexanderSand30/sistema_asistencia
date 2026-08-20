@@ -26,7 +26,7 @@ def listar():
 
     usuarios = UsuarioController.listar(busqueda=busqueda, estado=estado, pagina=pagina)
     return render_template(
-        "usuarios/index.html", usuarios=usuarios, busqueda=busqueda, estado=estado
+        "usuarios/index.html", usuarios=usuarios, busqueda=busqueda, estado=estado,
     )
 
 
@@ -37,6 +37,7 @@ def crear():
     if request.method == "GET":
         return redirect(url_for("usuario.listar"))
 
+    nro_documento = request.form.get("nro_documento", "").strip()
     nombre = request.form.get("nombre", "").strip()
     usuario = request.form.get("usuario", "").strip()
     password = request.form.get("password", "")
@@ -51,7 +52,9 @@ def crear():
         flash("Completa todos los campos obligatorios.", "danger")
         return redirect(url_for("usuario.listar"))
 
-    _, error = UsuarioController.crear(nombre, usuario, password, rol)
+    _, error = UsuarioController.crear(
+        nro_documento, nombre, usuario, password, rol
+    )
     (
         flash(error, "danger")
         if error
@@ -68,6 +71,7 @@ def editar(id):
         return redirect(url_for("usuario.listar"))
 
     nombre = request.form.get("nombre", "").strip()
+    nro_documento = request.form.get("nro_documento", "").strip()
     nombre_usuario = request.form.get("usuario", "").strip()
     password = request.form.get("password", "")
     rol = request.form.get("rol", "supervisor")
@@ -78,7 +82,7 @@ def editar(id):
         return redirect(url_for("usuario.listar"))
 
     _, error = UsuarioController.editar(
-        id, nombre, nombre_usuario, password, rol, estado
+        id, nro_documento, nombre, nombre_usuario, password, rol, estado
     )
     (
         flash(error, "danger")

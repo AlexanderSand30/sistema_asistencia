@@ -1,107 +1,52 @@
-import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from database.conexion import obtener_conexion
+from config.extensions import db
 from models.trabajador_model import Trabajador
-from mysql.connector import IntegrityError
+from sqlalchemy.exc import IntegrityError
 
 
 class TrabajadorService:
 
     def listar(self):
-        conn, cursor = None, None
-        try:
-            conn = obtener_conexion()
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id, dni, nombres, apellidos, cargo, estado "
-                "FROM Trabajador WHERE estado = 1 ORDER BY apellidos"
-            )
-            return [Trabajador(*row) for row in cursor.fetchall()]
-        finally:
-            if cursor: cursor.close()
-            if conn: conn.close()
+        return Trabajador.query.filter_by(estado=True).order_by(Trabajador.apellidos).all()
 
     def listar_inactivos(self):
-        conn, cursor = None, None
-        try:
-            conn = obtener_conexion()
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id, dni, nombres, apellidos, cargo, estado "
-                "FROM Trabajador WHERE estado = 0 ORDER BY apellidos"
-            )
-            return [Trabajador(*row) for row in cursor.fetchall()]
-        finally:
-            if cursor: cursor.close()
-            if conn: conn.close()
+        return Trabajador.query.filter_by(estado=False).order_by(Trabajador.apellidos).all()
+
+    def buscar_por_dni(self, dni):
+        return Trabajador.query.filter_by(dni=dni, estado=True).first()
 
     def crear(self, trabajador):
-        conn, cursor = None, None
+        db.session.add(trabajador)
         try:
-            conn = obtener_conexion()
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO Trabajador (dni, nombres, apellidos, cargo) VALUES (%s, %s, %s, %s)",
-                (trabajador.dni, trabajador.nombres, trabajador.apellidos, trabajador.cargo)
-            )
-            conn.commit()
-            return cursor.lastrowid
+            db.session.commit()
         except IntegrityError:
-            if conn: conn.rollback()
+            db.session.rollback()
             raise Exception(f"Ya existe un trabajador registrado con el DNI {trabajador.dni}")
-        except Exception:
-            if conn: conn.rollback()
-            raise
-        finally:
-            if cursor: cursor.close()
-            if conn: conn.close()
+        return trabajador.id
 
     def actualizar(self, trabajador):
-        conn, cursor = None, None
+        existente = Trabajador.query.get(trabajador.id)
+        if not existente:
+            raise Exception("Trabajador no encontrado")
+        existente.dni = trabajador.dni
+        existente.nombres = trabajador.nombres
+        existente.apellidos = trabajador.apellidos
+        existente.cargo = trabajador.cargo
         try:
-            conn = obtener_conexion()
-            cursor = conn.cursor()
-            cursor.execute(
-                "UPDATE Trabajador SET dni=%s, nombres=%s, apellidos=%s, cargo=%s WHERE id=%s",
-                (trabajador.dni, trabajador.nombres, trabajador.apellidos, trabajador.cargo, trabajador.id)
-            )
-            conn.commit()
+            db.session.commit()
         except IntegrityError:
-            if conn: conn.rollback()
+            db.session.rollback()
             raise Exception(f"El DNI {trabajador.dni} ya pertenece a otro trabajador")
-        except Exception:
-            if conn: conn.rollback()
-            raise
-        finally:
-            if cursor: cursor.close()
-            if conn: conn.close()
 
     def eliminar(self, id):
-        conn, cursor = None, None
-        try:
-            conn = obtener_conexion()
-            cursor = conn.cursor()
-            cursor.execute("UPDATE Trabajador SET estado = 0 WHERE id = %s", (id,))
-            conn.commit()
-        except Exception:
-            if conn: conn.rollback()
-            raise
-        finally:
-            if cursor: cursor.close()
-            if conn: conn.close()
+        trabajador = Trabajador.query.get(id)
+        if not trabajador:
+            raise Exception("Trabajador no encontrado")
+        trabajador.estado = False
+        db.session.commit()
 
     def reactivar(self, id):
-        conn, cursor = None, None
-        try:
-            conn = obtener_conexion()
-            cursor = conn.cursor()
-            cursor.execute("UPDATE Trabajador SET estado = 1 WHERE id = %s", (id,))
-            conn.commit()
-        except Exception:
-            if conn: conn.rollback()
-            raise
-        finally:
-            if cursor: cursor.close()
-            if conn: conn.close()
-            
+        trabajador = Trabajador.query.get(id)
+        if not trabajador:
+            raise Exception("Trabajador no encontrado")
+        trabajador.estado = True
+        db.session.commit()

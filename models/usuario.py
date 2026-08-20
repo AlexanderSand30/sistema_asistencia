@@ -22,6 +22,7 @@ class Usuario(db.Model):
     __tablename__ = "usuario"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    nro_documento = Column(String(15), nullable=True, unique=True)
     nombre = Column(String(100), nullable=False)
     usuario = Column(String(50), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
@@ -82,6 +83,7 @@ class Usuario(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
+            "nro_documento": self.nro_documento,
             "usuario": self.usuario,
             "nombre": self.nombre,
             "rol": self.rol,

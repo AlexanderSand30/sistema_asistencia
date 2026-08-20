@@ -56,6 +56,7 @@ ALTER TABLE usuario
         'operador'
     ) NOT NULL DEFAULT 'operador',
 
+    ADD COLUMN nro_documento varchar(15) UNIQUE NULL AFTER id,
     ADD COLUMN created_by INT NULL AFTER estado,
     ADD COLUMN updated_by INT NULL AFTER created_by,
 

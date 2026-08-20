@@ -77,7 +77,12 @@ def crear_trabajador():
         error_dni = _validar_dni(data.get("dni", ""))
         if error_dni:
             return jsonify({"error": error_dni}), 400
-        t = Trabajador(None, data["dni"], data["nombres"], data["apellidos"], data["cargo"])
+        t = Trabajador(
+            dni=data["dni"],
+            nombres=data["nombres"],
+            apellidos=data["apellidos"],
+            cargo=data["cargo"],
+        )
         service.crear(t)
         return jsonify({"mensaje": "Trabajador creado correctamente"}), 201
     except Exception as e:
@@ -92,7 +97,13 @@ def actualizar_trabajador(id):
         error_dni = _validar_dni(data.get("dni", ""))
         if error_dni:
             return jsonify({"error": error_dni}), 400
-        t = Trabajador(id, data["dni"], data["nombres"], data["apellidos"], data["cargo"])
+        t = Trabajador(
+            id=id,
+            dni=data["dni"],
+            nombres=data["nombres"],
+            apellidos=data["apellidos"],
+            cargo=data["cargo"],
+        )
         service.actualizar(t)
         return jsonify({"mensaje": "Trabajador actualizado correctamente"}), 200
     except Exception as e:

@@ -30,6 +30,7 @@
             <table class="table table-hover align-middle table-mobile-cards">
                 <thead class="table-dark">
                     <tr>
+                        <th>Nro. documento</th>
                         <th>Usuario</th>
                         <th>Nombre</th>
                         <th>Rol</th>
@@ -40,6 +41,7 @@
                 <tbody id="cuerpoTabla">
                     {% for u in usuarios.items %}
                         <tr>
+                            <td>{{ u.nro_documento or '-' }}</td>
                             <td>{{ u.usuario }}</td>
                             <td>{{ u.nombre }}</td>
                             <td class="text-uppercase">
@@ -54,7 +56,7 @@
                             </td>
                             <td class="text-center">
                                 {% if u.estado %}
-                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalUsuario" data-id="{{ u.id }}" data-nombre="{{ u.nombre|e }}" data-usuario="{{ u.usuario|e }}" data-rol="{{ u.rol }}" data-estado="{{ 1 if u.estado else 0 }}" onclick="prepararEditarUsuario(this)" title="Editar usuario">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalUsuario" data-id="{{ u.id }}" data-nro-documento="{{ u.nro_documento or '' }}" data-nombre="{{ u.nombre|e }}" data-usuario="{{ u.usuario|e }}" data-rol="{{ u.rol }}" data-estado="{{ 1 if u.estado else 0 }}" onclick="prepararEditarUsuario(this)" title="Editar usuario">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <form action="{{ url_for('usuario.eliminar', id=u.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Desactivar este usuario?');">
@@ -69,7 +71,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="5" class="text-center text-muted">No hay usuarios registrados.</td>
+                            <td colspan="6" class="text-center text-muted">No hay usuarios registrados.</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -105,16 +107,21 @@
                 <form id="formUsuario" method="POST" autocomplete="off">
                     <div class="modal-body">
                         <div class="mb-3">
+                            <label for="nroDocumentoUsuario" class="form-label">Nro. documento</label>
+                            <input id="nroDocumentoUsuario" name="nro_documento" class="form-control form-control-sm" required maxlength="8" pattern="[0-9]{8}" inputmode="numeric">
+                            <div class="form-text">Debe coincidir con el DNI de un trabajador activo.</div>
+                        </div>
+                        <div class="mb-3">
                             <label for="nombreUsuario" class="form-label">Nombre</label>
-                            <input id="nombreUsuario" name="nombre" class="form-control" required maxlength="100">
+                            <input id="nombreUsuario" name="nombre" class="form-control form-control-sm" required maxlength="100">
                         </div>
                         <div class="mb-3">
                             <label for="loginUsuario" class="form-label">Usuario</label>
-                            <input id="loginUsuario" name="usuario" class="form-control" required maxlength="50">
+                            <input id="loginUsuario" name="usuario" class="form-control form-control-sm" required maxlength="50">
                         </div>
                         <div class="mb-3">
                             <label for="passwordUsuario" class="form-label">Contraseña</label>
-                            <input id="passwordUsuario" name="password" type="password" class="form-control" minlength="6">
+                            <input id="passwordUsuario" name="password" type="password" class="form-control form-control-sm" minlength="6">
                             <div class="form-text" id="ayudaPassword">Mínimo 6 caracteres.</div>
                         </div>
                         <div class="mb-3">
@@ -166,6 +173,7 @@
                 id,
                 nombre,
                 usuario,
+                nroDocumento,
                 rol,
                 estado
             } = boton.dataset;
@@ -173,6 +181,7 @@
             formUsuario.action = `/usuarios/editar/${id}`;
             tituloModalUsuario.textContent = "Editar usuario";
             document.getElementById("nombreUsuario").value = nombre;
+            document.getElementById("nroDocumentoUsuario").value = nroDocumento || "";
             document.getElementById("loginUsuario").value = usuario;
             document.getElementById("rolUsuario").value = rol;
             estadoUsuario.checked = Boolean(estado);

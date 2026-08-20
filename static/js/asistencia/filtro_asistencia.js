@@ -6,18 +6,18 @@ document.getElementById("btnFiltrar").addEventListener("click", function () {
         alert("Selecciona ambas fechas para filtrar");
         return;
     }
-    cargarAsistencias(inicio, fin);
+    cargarAsistencias(inicio, fin, 1);
 });
 
 document.getElementById("btnHoy").addEventListener("click", function () {
     const hoy = new Date().toLocaleDateString("en-CA");
     document.getElementById("filtroFechaInicio").value = hoy;
     document.getElementById("filtroFechaFin").value = hoy;
-    cargarAsistencias(hoy, hoy);
+    cargarAsistencias(hoy, hoy, 1);
 });
 
 document.getElementById("btnVerTodos").addEventListener("click", function () {
     document.getElementById("filtroFechaInicio").value = "";
     document.getElementById("filtroFechaFin").value = "";
-    cargarAsistencias();
+    cargarAsistencias("", "", 1);
 });

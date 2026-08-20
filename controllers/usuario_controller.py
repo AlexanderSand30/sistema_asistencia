@@ -6,9 +6,12 @@ from sqlalchemy.exc import IntegrityError
 
 from config.constants import ROLES, PASSWORD_MIN_LENGTH
 from models.usuario import db, Usuario
+from services.trabajador_service import TrabajadorService
 
 
 class UsuarioController:
+
+    trabajador_service = TrabajadorService()
 
     # ---------- HELPERS INTERNOS ----------
     @staticmethod
@@ -40,6 +43,24 @@ class UsuarioController:
         return query.first() is not None
 
     @staticmethod
+    def _documento_existe(nro_documento, excluir_id=None):
+        if not nro_documento:
+            return False
+        query = Usuario.query.filter(Usuario.nro_documento == nro_documento)
+        if excluir_id is not None:
+            query = query.filter(Usuario.id != excluir_id)
+        return query.first() is not None
+
+    @staticmethod
+    def _trabajador_valido(nro_documento):
+        if not nro_documento:
+            return False, "Debes asignar el número de documento del trabajador."
+        trabajador = UsuarioController.trabajador_service.buscar_por_dni(nro_documento)
+        if not trabajador:
+            return False, "El número de documento no corresponde a un trabajador activo."
+        return True, None
+
+    @staticmethod
     def _escapar_like(texto):
         # Escapa los comodines propios de LIKE/ILIKE para que una
         # búsqueda con "%" o "_" no se interprete como comodín.
@@ -68,6 +89,7 @@ class UsuarioController:
             query = query.filter(
                 (Usuario.usuario.ilike(patron, escape="\\"))
                 | (Usuario.nombre.ilike(patron, escape="\\"))
+                | (Usuario.nro_documento.ilike(patron, escape="\\"))
                 | (Usuario.rol.ilike(patron, escape="\\"))
             )
 
@@ -87,7 +109,7 @@ class UsuarioController:
 
     # ---------- CREAR ----------
     @staticmethod
-    def crear(nombre, usuario, password, rol, estado=True):
+    def crear(nro_documento, nombre, usuario, password, rol, estado=True):
         if not UsuarioController._rol_valido(rol):
             return None, "Rol no válido."
         if not UsuarioController._puede_asignar_rol(rol):
@@ -99,10 +121,19 @@ class UsuarioController:
             )
 
         nombre_usuario = usuario.strip()
+        nro_documento = nro_documento.strip()
+        valido, error = UsuarioController._trabajador_valido(nro_documento)
+        if not valido:
+            return None, error
+        if len(nro_documento) != 8 or not nro_documento.isdigit():
+            return None, "El número de documento debe tener exactamente 8 dígitos."
         if UsuarioController._usuario_existe(nombre_usuario):
             return None, "Ese nombre de usuario ya está en uso."
+        if UsuarioController._documento_existe(nro_documento):
+            return None, "Ese número de documento ya está en uso."
 
         nuevo = Usuario(
+            nro_documento=nro_documento,
             nombre=nombre.strip(),
             usuario=nombre_usuario,
             rol=rol,
@@ -122,7 +153,7 @@ class UsuarioController:
 
     # ---------- EDITAR ----------
     @staticmethod
-    def editar(id, nombre, nombre_usuario, password, rol, estado):
+    def editar(id, nro_documento, nombre, nombre_usuario, password, rol, estado):
         usuario = Usuario.query.get_or_404(id)
 
         if not UsuarioController._puede_gestionar(usuario):
@@ -138,9 +169,18 @@ class UsuarioController:
             )
 
         nombre_usuario = nombre_usuario.strip()
+        nro_documento = nro_documento.strip()
+        valido, error = UsuarioController._trabajador_valido(nro_documento)
+        if not valido:
+            return None, error
+        if len(nro_documento) != 8 or not nro_documento.isdigit():
+            return None, "El número de documento debe tener exactamente 8 dígitos."
         if UsuarioController._usuario_existe(nombre_usuario, excluir_id=id):
             return None, "Ese nombre de usuario ya está en uso."
+        if UsuarioController._documento_existe(nro_documento, excluir_id=id):
+            return None, "Ese número de documento ya está en uso."
 
+        usuario.nro_documento = nro_documento
         usuario.nombre = nombre.strip()
         usuario.usuario = nombre_usuario
         usuario.rol = rol

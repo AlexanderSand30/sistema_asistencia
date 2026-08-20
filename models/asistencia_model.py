@@ -1,25 +1,40 @@
-class Asistencia:
+from datetime import datetime
 
-    def __init__(self, id, trabajador_id, obra, fecha, hora_entrada, hora_salida,
-                 cargo=None,
-                 foto_entrada=None, lat_entrada=None, lng_entrada=None,
-                 foto_salida=None, lat_salida=None, lng_salida=None,
-                 estado='Pendiente'):
-        self.id            = id
-        self.trabajador_id = trabajador_id
-        self.obra          = obra
-        self.fecha         = fecha
-        self.hora_entrada  = hora_entrada
-        self.hora_salida   = hora_salida
-        self.cargo         = cargo
-        self.foto_entrada  = foto_entrada
-        self.lat_entrada   = lat_entrada
-        self.lng_entrada   = lng_entrada
-        self.foto_salida   = foto_salida
-        self.lat_salida    = lat_salida
-        self.lng_salida    = lng_salida
-        self.estado        = estado
+from config.extensions import db
+
+from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, Numeric, String, Time, text
+from sqlalchemy.orm import relationship
+
+
+class Asistencia(db.Model):
+
+    __tablename__ = "asistencia"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    trabajador_id = Column(Integer, ForeignKey("trabajador.id"), nullable=False)
+    obra = Column(String(150), nullable=True)
+    fecha = Column(Date, nullable=False)
+    hora_entrada = Column(Time, nullable=True)
+    hora_salida = Column(Time, nullable=True)
+    foto_entrada = Column(String(255), nullable=True)
+    lat_entrada = Column(Numeric(10, 7), nullable=True)
+    lng_entrada = Column(Numeric(10, 7), nullable=True)
+    foto_salida = Column(String(255), nullable=True)
+    lat_salida = Column(Numeric(10, 7), nullable=True)
+    lng_salida = Column(Numeric(10, 7), nullable=True)
+    estado = Column(String(20), nullable=False, default="Pendiente")
+    created_at = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    updated_at = Column(
+        DateTime,
+        nullable=False,
+        server_default=text("CURRENT_TIMESTAMP"),
+        onupdate=datetime.utcnow,
+    )
+    created_by = Column(Integer, ForeignKey("usuario.id"), nullable=True)
+    updated_by = Column(Integer, ForeignKey("usuario.id"), nullable=True)
+
+    trabajador = relationship("Trabajador")
 
     def __repr__(self):
-        return f"Asistencia({self.id}, trabajador={self.trabajador_id}, {self.fecha}, {self.estado})"
+        return f"<Asistencia {self.id}, trabajador={self.trabajador_id}, estado={self.estado}>"
     

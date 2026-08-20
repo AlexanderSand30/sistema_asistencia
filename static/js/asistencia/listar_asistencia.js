@@ -1,4 +1,9 @@
-function cargarAsistencias(fechaInicio, fechaFin) {
+function cargarAsistencias(fechaInicio, fechaFin, pagina = 1) {
+
+    if (fechaInicio === undefined) {
+        fechaInicio = document.getElementById("filtroFechaInicio")?.value || "";
+        fechaFin = document.getElementById("filtroFechaFin")?.value || "";
+    }
 
     let url = "/api/asistencias";
     const params = [];
@@ -11,6 +16,9 @@ function cargarAsistencias(fechaInicio, fechaFin) {
         params.push(`fecha_fin=${encodeURIComponent(fechaFin)}`);
     }
 
+    params.push(`page=${pagina}`);
+    params.push("per_page=10");
+
     if (params.length) {
         url += "?" + params.join("&");
     }
@@ -21,7 +29,8 @@ function cargarAsistencias(fechaInicio, fechaFin) {
             const cuerpo = document.getElementById("cuerpoTablaAsistencia");
             cuerpo.innerHTML = "";
 
-            if (!data || data.length === 0) {
+            if (!data || !data.items || data.items.length === 0) {
+                renderizarPaginacionAsistencia(data);
                 cuerpo.innerHTML = `
                     <tr>
                         <td colspan="11" class="text-center py-5">
@@ -38,7 +47,7 @@ function cargarAsistencias(fechaInicio, fechaFin) {
                 return;
             }
 
-            data.forEach(a => {
+            data.items.forEach(a => {
 
                 // -----------------------------
                 // ACCIONES
@@ -240,6 +249,8 @@ function cargarAsistencias(fechaInicio, fechaFin) {
                 `;
             });
 
+            renderizarPaginacionAsistencia(data, fechaInicio, fechaFin);
+
         })
         .catch(error => {
 
@@ -261,6 +272,40 @@ function cargarAsistencias(fechaInicio, fechaFin) {
         });
 }
 
+function renderizarPaginacionAsistencia(data, fechaInicio, fechaFin) {
+    const paginacion = document.getElementById("paginacionAsistencia");
+    const resumen = document.getElementById("resumenPaginacionAsistencia");
+    if (!paginacion || !resumen) return;
+
+    paginacion.innerHTML = "";
+    if (!data || !data.total) {
+        resumen.textContent = "0 registros";
+        return;
+    }
+
+    const inicio = (data.pagina - 1) * data.por_pagina + 1;
+    const fin = Math.min(data.pagina * data.por_pagina, data.total);
+    resumen.textContent = `Mostrando ${inicio}-${fin} de ${data.total} registros`;
+
+    const agregarPagina = (pagina, texto, activa = false, deshabilitada = false) => {
+        const item = document.createElement("li");
+        item.className = `page-item${activa ? " active" : ""}${deshabilitada ? " disabled" : ""}`;
+        item.innerHTML = `<button class="page-link" type="button">${texto}</button>`;
+        if (!deshabilitada) {
+            item.querySelector("button").addEventListener("click", () =>
+                cargarAsistencias(fechaInicio, fechaFin, pagina)
+            );
+        }
+        paginacion.appendChild(item);
+    };
+
+    agregarPagina(data.pagina - 1, "Anterior", false, data.pagina === 1);
+    for (let pagina = 1; pagina <= data.total_paginas; pagina += 1) {
+        agregarPagina(pagina, pagina, pagina === data.pagina);
+    }
+    agregarPagina(data.pagina + 1, "Siguiente", false, data.pagina === data.total_paginas);
+}
+
 
 function formatearFecha(fecha) {
 
@@ -274,4 +319,20 @@ function formatearFecha(fecha) {
 }
 
 
-cargarAsistencias();
+function inicializarRangoMesActual() {
+    const hoy = new Date();
+    const anio = hoy.getFullYear();
+    const mes = hoy.getMonth();
+    const formato = fecha => {
+        const mesTexto = String(fecha.getMonth() + 1).padStart(2, "0");
+        const diaTexto = String(fecha.getDate()).padStart(2, "0");
+        return `${fecha.getFullYear()}-${mesTexto}-${diaTexto}`;
+    };
+    const inicio = new Date(anio, mes, 1);
+    const fin = new Date(anio, mes + 1, 0);
+    document.getElementById("filtroFechaInicio").value = formato(inicio);
+    document.getElementById("filtroFechaFin").value = formato(fin);
+    cargarAsistencias(formato(inicio), formato(fin));
+}
+
+inicializarRangoMesActual();
