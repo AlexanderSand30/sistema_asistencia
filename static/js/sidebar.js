@@ -66,8 +66,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    // Estado inicial
-    if (window.innerWidth <= 767) {
-        cerrarSidebar();
+    function sincronizarResponsive() {
+        const esMovil = window.matchMedia("(max-width: 767.98px)").matches;
+
+        if (esMovil) {
+            cerrarSidebar();
+            return;
+        }
+
+        sidebar.classList.remove("sidebar-hidden");
+        openBtn.classList.remove("show");
+        openBtn.setAttribute("aria-expanded", "false");
+        if (overlay) {
+            overlay.classList.remove("show");
+        }
     }
+
+    sincronizarResponsive();
+    window.addEventListener("resize", sincronizarResponsive);
 });
