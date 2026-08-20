@@ -4,7 +4,7 @@ document.getElementById("btnExportarPDF").addEventListener("click", function () 
     const dni = document.getElementById("dniReporte").value.trim();
 
     if (!inicio || !fin) {
-        alert("Selecciona la fecha de inicio y fecha fin");
+        mostrarToast("warning", "Selecciona la fecha de inicio y fecha fin");
         return;
     }
 

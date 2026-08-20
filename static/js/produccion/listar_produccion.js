@@ -24,7 +24,7 @@ document.getElementById("btnBuscarProduccion").addEventListener("click", functio
     const cuerpo = document.getElementById("cuerpoTablaProduccion");
 
     if (!inicio || !fin) {
-        alert("Selecciona la fecha de inicio y fecha fin");
+        mostrarToast("warning", "Selecciona la fecha de inicio y fecha fin");
         return;
     }
 

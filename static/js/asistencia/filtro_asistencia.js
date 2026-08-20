@@ -3,7 +3,7 @@ document.getElementById("btnFiltrar").addEventListener("click", function () {
     const fin = document.getElementById("filtroFechaFin").value;
 
     if (!inicio || !fin) {
-        alert("Selecciona ambas fechas para filtrar");
+        mostrarToast("warning", "Selecciona ambas fechas para filtrar");
         return;
     }
     cargarAsistencias(inicio, fin, 1);

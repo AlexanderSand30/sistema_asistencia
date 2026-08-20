@@ -12,7 +12,7 @@ function buscarTrabajadorPorDni() {
     const dni = document.getElementById("dniBuscar").value.trim();
 
     if (!dni) {
-        alert("Ingrese un DNI");
+        mostrarToast("warning", "Ingrese un DNI");
         return;
     }
 
@@ -20,7 +20,7 @@ function buscarTrabajadorPorDni() {
         .then(res => res.json())
         .then(data => {
             if (data.error) {
-                alert("Error: " + data.error);
+                mostrarToast("error", data.error);
                 document.getElementById("datosTrabajador").classList.add("d-none");
                 return;
             }
@@ -42,9 +42,9 @@ fetch("/api/asistencias/mi-trabajador")
     .then(res => res.json())
     .then(data => {
         if (data.error) {
-            alert(data.error);
+            mostrarToast("error", data.error);
             return;
         }
         mostrarTrabajador(data);
     })
-    .catch(() => alert("No se pudo cargar el trabajador vinculado."));
+    .catch(() => mostrarToast("error", "No se pudo cargar el trabajador vinculado."));

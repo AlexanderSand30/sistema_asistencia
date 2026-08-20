@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const dni = document.getElementById("dni").value.trim();
 
             if (!/^[0-9]{8}$/.test(dni)) {
-                alert("El DNI debe contener exactamente 8 números");
+                mostrarToast("warning", "El DNI debe contener exactamente 8 números");
                 return;
             }
 
@@ -61,15 +61,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                     return data;
                 })
-                .then(() => {
+                .then(data => {
                     limpiarFormulario();
                     cargarTrabajadores();
                     if (typeof cargarInactivos === "function") {
                         cargarInactivos();
                     }
+                    mostrarToast("success", data.mensaje || "Trabajador guardado correctamente");
                 })
                 .catch(err => {
-                    alert(err.message);
+                    mostrarToast("error", err.message);
                 });
         });
     }

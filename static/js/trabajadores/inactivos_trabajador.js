@@ -40,8 +40,8 @@ function cargarInactivos() {
         });
 }
 
-function reactivarTrabajador(id) {
-    if (!confirm("¿Reactivar este trabajador?")) return;
+async function reactivarTrabajador(id) {
+    if (!await confirmarAccion("El trabajador volverá a estar activo.", "Reactivar")) return;
     fetch(`/api/trabajadores/${id}/reactivar`, { method: "PUT" })
         .then(async res => {
             const data = await res.json();
@@ -50,11 +50,12 @@ function reactivarTrabajador(id) {
             }
             return data;
         })
-        .then(() => {
+        .then(data => {
             cargarInactivos();
             cargarTrabajadores();
+            mostrarToast("success", data.mensaje || "Trabajador reactivado correctamente");
         })
         .catch(err => {
-            alert(err.message);
+            mostrarToast("error", err.message);
         });
 }

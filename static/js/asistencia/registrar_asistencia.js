@@ -3,7 +3,7 @@ document.getElementById("btnRegistrar").addEventListener("click", function () {
     const obra = document.getElementById("infoObra").value.trim();
 
     if (!obra) {
-        alert("Ingrese el nombre de la obra");
+        mostrarToast("warning", "Ingrese el nombre de la obra");
         return;
     }
 
@@ -14,8 +14,8 @@ document.getElementById("btnRegistrar").addEventListener("click", function () {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.error) { alert("Error: " + data.error); return; }
-        alert("✅ Asistencia registrada");
+        if (data.error) { mostrarToast("error", data.error); return; }
+        mostrarToast("success", "Asistencia registrada");
         document.getElementById("datosTrabajador").classList.add("d-none");
         document.getElementById("dniBuscar").value = "";
         cargarAsistencias();

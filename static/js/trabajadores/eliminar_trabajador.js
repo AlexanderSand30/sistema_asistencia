@@ -1,5 +1,5 @@
-function eliminarTrabajador(id) {
-    if (!confirm("¿Eliminar este trabajador?")) return;
+async function eliminarTrabajador(id) {
+    if (!await confirmarAccion("El trabajador quedará inactivo.", "Desactivar")) return;
     fetch(`/api/trabajadores/${id}`, { method: "DELETE" })
         .then(async res => {
             const data = await res.json();
@@ -8,13 +8,14 @@ function eliminarTrabajador(id) {
             }
             return data;
         })
-        .then(() => {
+        .then(data => {
             cargarTrabajadores();
             if (typeof cargarInactivos === "function") {
                 cargarInactivos();
             }
+            mostrarToast("success", data.mensaje || "Trabajador desactivado correctamente");
         })
         .catch(err => {
-            alert(err.message);
+            mostrarToast("error", err.message);
         });
 }

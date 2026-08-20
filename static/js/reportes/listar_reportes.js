@@ -6,7 +6,7 @@ document.getElementById("btnBuscarReporte").addEventListener("click", function (
     const totalResultados = document.getElementById("totalResultados");
 
     if (!inicio || !fin) {
-        alert("Selecciona la fecha de inicio y fecha fin");
+        mostrarToast("warning", "Selecciona la fecha de inicio y fecha fin");
         return;
     }
 

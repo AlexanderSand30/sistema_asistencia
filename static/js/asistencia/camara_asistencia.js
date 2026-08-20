@@ -33,7 +33,7 @@ function iniciarCamara() {
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
         .then(stream => { streamActivo = stream; video.srcObject = stream; })
         .catch(err => {
-            alert('No se pudo acceder a la cámara: ' + err.message);
+            mostrarToast('error', 'No se pudo acceder a la cámara: ' + err.message);
             modalCamara.hide();
         });
 }
@@ -81,8 +81,8 @@ document.getElementById('btnRetomar').addEventListener('click', () => {
 });
 
 document.getElementById('btnConfirmarMarcado').addEventListener('click', () => {
-    if (!fotoCapturada) { alert('Primero toma la foto'); return; }
-    if (!coordsActuales) { alert('Esperando ubicación, intenta de nuevo en unos segundos'); return; }
+    if (!fotoCapturada) { mostrarToast('warning', 'Primero toma la foto'); return; }
+    if (!coordsActuales) { mostrarToast('warning', 'Esperando ubicación, intenta de nuevo en unos segundos'); return; }
 
     fetch(`/api/asistencias/${idActual}/${tipoActual}`, {
         method: 'PUT',
@@ -91,15 +91,15 @@ document.getElementById('btnConfirmarMarcado').addEventListener('click', () => {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.error) { alert('Error: ' + data.error); return; }
+        if (data.error) { mostrarToast('error', data.error); return; }
         const mensaje = tipoActual === 'entrada'
             ? '✅ Entrada marcada: ' + data.hora_entrada
             : '✅ Salida marcada: ' + data.hora_salida;
-        alert(mensaje);
+        mostrarToast('success', mensaje);
         modalCamara.hide();
         cargarAsistencias();
     })
-    .catch(err => { console.error(err); alert('Error al marcar asistencia'); });
+    .catch(err => { console.error(err); mostrarToast('error', 'Error al marcar asistencia'); });
 });
 
 document.getElementById('modalCamara').addEventListener('hidden.bs.modal', detenerCamara);
