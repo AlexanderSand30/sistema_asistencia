@@ -15,9 +15,26 @@ document.getElementById("btnSemanaActual").addEventListener("click", function ()
 
     document.getElementById("fechaInicio").value = formatoFecha(lunes);
     document.getElementById("fechaFin").value = formatoFecha(sabado);
+    cargarProduccion();
 });
 
-document.getElementById("btnBuscarProduccion").addEventListener("click", function () {
+function actualizarResumenProduccion(registros) {
+    const horasTrabajadas = registros.reduce((total, registro) => total + Number(registro.horas_trabajadas || 0), 0);
+    const horasExtra = registros.reduce((total, registro) => total + Number(registro.horas_extra || 0), 0);
+    const faltas = registros.reduce((total, registro) => total + Number(registro.faltas || 0), 0);
+
+    document.getElementById("totalHorasTrabajadas").textContent = `${horasTrabajadas.toFixed(2)} h`;
+    document.getElementById("totalHorasExtra").textContent = `${horasExtra.toFixed(2)} h`;
+    document.getElementById("totalFaltas").textContent = faltas;
+}
+
+function limpiarResumenProduccion() {
+    document.getElementById("totalHorasTrabajadas").textContent = "0.00 h";
+    document.getElementById("totalHorasExtra").textContent = "0.00 h";
+    document.getElementById("totalFaltas").textContent = "0";
+}
+
+function cargarProduccion() {
     const inicio = document.getElementById("fechaInicio").value;
     const fin = document.getElementById("fechaFin").value;
     const dni = document.getElementById("dniProduccion").value.trim();
@@ -36,15 +53,19 @@ document.getElementById("btnBuscarProduccion").addEventListener("click", functio
     fetch(url)
         .then(res => res.json())
         .then(data => {
+
             if (data.error) {
+                limpiarResumenProduccion();
                 cuerpo.innerHTML = `<tr><td colspan="7" class="text-center text-danger">${data.error}</td></tr>`;
                 return;
             }
             if (data.length === 0) {
+                limpiarResumenProduccion();
                 cuerpo.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Sin trabajadores para mostrar</td></tr>`;
                 return;
             }
 
+            actualizarResumenProduccion(data);
             cuerpo.innerHTML = "";
             data.forEach(p => {
                 const horasExtraTexto = p.horas_extra > 0
@@ -66,7 +87,21 @@ document.getElementById("btnBuscarProduccion").addEventListener("click", functio
             });
         })
         .catch(err => {
+            limpiarResumenProduccion();
             cuerpo.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error al cargar los datos</td></tr>`;
             console.error(err);
         });
-});
+}
+
+document.getElementById("btnBuscarProduccion").addEventListener("click", cargarProduccion);
+
+function inicializarRangoMesActual() {
+    const hoy = new Date();
+    const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    const fin = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+    document.getElementById("fechaInicio").value = formatoFecha(inicio);
+    document.getElementById("fechaFin").value = formatoFecha(fin);
+    cargarProduccion();
+}
+
+inicializarRangoMesActual();

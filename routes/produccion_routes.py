@@ -2,16 +2,15 @@ from flask import Blueprint, render_template, session, redirect, url_for
 from controllers.produccion_controller import (
     obtener_resumen_produccion, exportar_pdf_produccion, exportar_excel_produccion
 )
+from utils.decorators import login_required, admin_required
 
 produccion_bp = Blueprint("produccion", __name__)
 
 
 @produccion_bp.route("/produccion", methods=["GET"])
+@login_required
+@admin_required
 def vista_produccion():
-    if not session.get("usuario_id"):
-        return redirect(url_for("login.login"))
-    if session.get("rol") != "admin":
-        return "No autorizado", 403
     return render_template("produccion/index.html")
 
 

@@ -5,13 +5,11 @@
 
     <!-- ENCABEZADO -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-2">
                     <i class="bi bi-bar-chart-line-fill fs-4"></i>
                 </div>
-
                 <div>
                     <h4 class="fw-bold mb-0">Módulo Producción</h4>
                     <small class="text-muted">
@@ -19,7 +17,6 @@
                     </small>
                 </div>
             </div>
-
             <p class="text-muted mb-0 mt-2 small">
                 Consulta las horas trabajadas, horas extra y faltas por trabajador.
             </p>
@@ -31,23 +28,18 @@
                 <i class="bi bi-file-earmark-pdf me-1"></i>
                 PDF
             </button>
-
             <button class="btn btn-outline-success" id="btnExportarExcel" title="Exportar reporte en Excel">
                 <i class="bi bi-file-earmark-excel me-1"></i>
                 Excel
             </button>
         </div>
-
     </div>
-
 
     <!-- FILTROS -->
     <div class="card border-0 shadow-sm mb-4">
-
         <div class="card-header bg-white border-0 pt-4 px-4">
             <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-funnel-fill text-primary"></i>
-
                 <div>
                     <h6 class="fw-bold mb-0">Filtros de consulta</h6>
                     <small class="text-muted">
@@ -58,40 +50,32 @@
         </div>
 
         <div class="card-body px-4 pb-4">
-
             <div class="row g-3 align-items-end">
-
                 <!-- FECHA INICIO -->
                 <div class="col-lg-3 col-md-6">
                     <label for="fechaInicio" class="form-label fw-semibold small">
                         Fecha inicio
                     </label>
-
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="bi bi-calendar-event text-muted"></i>
                         </span>
-
-                        <input type="date" id="fechaInicio" class="form-control border-start-0">
+                        <input type="date" id="fechaInicio" class="form-control form-control-sm border-start-0">
                     </div>
                 </div>
 
-
                 <!-- FECHA FIN -->
                 <div class="col-lg-3 col-md-6">
-                    <label for="fechaFin" class="form-label fw-semibold small">
+                    <label for="fechaFin" class="form-label small">
                         Fecha fin
                     </label>
-
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="bi bi-calendar-check text-muted"></i>
                         </span>
-
-                        <input type="date" id="fechaFin" class="form-control border-start-0">
+                        <input type="date" id="fechaFin" class="form-control form-control-sm border-start-0">
                     </div>
                 </div>
-
 
                 <!-- DNI -->
                 <div class="col-lg-3 col-md-6">
@@ -99,21 +83,17 @@
                         DNI
                         <span class="text-muted fw-normal">(opcional)</span>
                     </label>
-
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="bi bi-person-vcard text-muted"></i>
                         </span>
-
-                        <input type="text" id="dniProduccion" class="form-control border-start-0" maxlength="8" placeholder="Todos los trabajadores">
+                        <input type="text" id="dniProduccion" class="form-control form-control-sm border-start-0" maxlength="8" placeholder="Todos los trabajadores">
                     </div>
                 </div>
 
-
                 <!-- BUSCAR -->
                 <div class="col-lg-3 col-md-6">
-                    <button class="btn btn-primary w-100 py-2" id="btnBuscarProduccion">
-
+                    <button class="btn btn-sm btn-primary w-100 py-2" id="btnBuscarProduccion">
                         <i class="bi bi-search me-1"></i>
                         Buscar producción
                     </button>
@@ -124,34 +104,25 @@
 
             <!-- ATAJO SEMANA -->
             <div class="mt-3 pt-3 border-top">
-
                 <button class="btn btn-sm btn-light border" id="btnSemanaActual">
-
                     <i class="bi bi-calendar-week me-1"></i>
                     Esta semana
                 </button>
-
                 <span class="text-muted small ms-2">
                     Consulta rápidamente la semana actual
                 </span>
-
             </div>
-
         </div>
     </div>
 
-
     <!-- RESUMEN -->
     <div class="row g-3 mb-4">
-
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body d-flex align-items-center">
-
                     <div class="rounded-3 bg-primary bg-opacity-10 text-primary p-3 me-3">
                         <i class="bi bi-clock-history fs-4"></i>
                     </div>
-
                     <div>
                         <small class="text-muted d-block">
                             Horas trabajadas
@@ -160,20 +131,16 @@
                             —
                         </h5>
                     </div>
-
                 </div>
             </div>
         </div>
 
-
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body d-flex align-items-center">
-
                     <div class="rounded-3 bg-warning bg-opacity-10 text-warning p-3 me-3">
                         <i class="bi bi-stopwatch fs-4"></i>
                     </div>
-
                     <div>
                         <small class="text-muted d-block">
                             Horas extra
@@ -182,20 +149,16 @@
                             —
                         </h5>
                     </div>
-
                 </div>
             </div>
         </div>
 
-
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body d-flex align-items-center">
-
                     <div class="rounded-3 bg-danger bg-opacity-10 text-danger p-3 me-3">
                         <i class="bi bi-person-x fs-4"></i>
                     </div>
-
                     <div>
                         <small class="text-muted d-block">
                             Faltas
@@ -204,21 +167,15 @@
                             —
                         </h5>
                     </div>
-
                 </div>
             </div>
         </div>
-
     </div>
-
 
     <!-- TABLA -->
     <div class="card border-0 shadow-sm">
-
         <div class="card-header bg-white border-0 px-4 pt-4">
-
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-
                 <div>
                     <h6 class="fw-bold mb-1">
                         <i class="bi bi-people-fill text-primary me-2"></i>
@@ -234,20 +191,13 @@
                     <i class="bi bi-table me-1"></i>
                     Detalle
                 </span>
-
             </div>
-
         </div>
 
-
         <div class="card-body p-0">
-
             <div class="table-responsive">
-
                 <table class="table table-hover align-middle mb-0">
-
                     <thead class="table-light">
-
                         <tr>
                             <th class="ps-4">DNI</th>
                             <th>Trabajador</th>
@@ -256,51 +206,35 @@
                             <th class="text-center">Horas extra</th>
                             <th class="text-center pe-4">Faltas</th>
                         </tr>
-
                     </thead>
-
                     <tbody id="cuerpoTablaProduccion">
-
                         <tr>
                             <td colspan="6" class="py-5 text-center">
-
                                 <div class="text-muted">
-
                                     <div class="mb-3">
                                         <i class="bi bi-search fs-1 opacity-50"></i>
                                     </div>
-
                                     <h6 class="fw-semibold">
                                         No hay datos para mostrar
                                     </h6>
-
                                     <p class="small mb-0">
                                         Selecciona un rango de fechas y haz clic en
                                         <strong>“Buscar producción”</strong>.
                                     </p>
-
                                 </div>
-
                             </td>
                         </tr>
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
 {% endblock %}
 
 {% block extra_js %}
 
 <script src="{{ url_for('static', filename='js/produccion/listar_produccion.js') }}"></script>
-<script src="{{ url_for('static', filename='js/trabajadores/sidebar.js') }}"></script>
 <script src="{{ url_for('static', filename='js/produccion/exportar_produccion.js') }}"></script>
 
 {% endblock %}

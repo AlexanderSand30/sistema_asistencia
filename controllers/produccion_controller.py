@@ -10,8 +10,12 @@ from services.excel_service import generar_excel
 service = ProduccionService()
 
 
+def _puede_ver_produccion():
+    return session.get("rol") in ("admin", "superadmin")
+
+
 def obtener_resumen_produccion():
-    if session.get('rol') != 'admin':
+    if not _puede_ver_produccion():
         return jsonify({"error": "No autorizado"}), 403
     try:
         fecha_inicio = request.args.get("inicio")
@@ -28,7 +32,7 @@ def obtener_resumen_produccion():
 
 
 def exportar_pdf_produccion():
-    if session.get('rol') != 'admin':
+    if not _puede_ver_produccion():
         return jsonify({"error": "No autorizado"}), 403
     try:
         fecha_inicio = request.args.get("inicio")
@@ -61,7 +65,7 @@ def exportar_pdf_produccion():
 
 
 def exportar_excel_produccion():
-    if session.get('rol') != 'admin':
+    if not _puede_ver_produccion():
         return jsonify({"error": "No autorizado"}), 403
     try:
         fecha_inicio = request.args.get("inicio")

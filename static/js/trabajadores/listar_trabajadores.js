@@ -1,6 +1,6 @@
 const estadoTrabajadores = {
     page: 1,
-    perPage: 8,
+    perPage: 10,
     totalPages: 1,
     total: 0,
 };

@@ -48,7 +48,7 @@ def _paginar_datos(items, page, per_page):
 def listar_trabajadores():
     try:
         page = request.args.get("page", 1, type=int)
-        per_page = request.args.get("per_page", 8, type=int)
+        per_page = request.args.get("per_page", 10, type=int)
         trabajadores = service.listar()
         payload = _paginar_datos(_serializar_trabajadores(trabajadores), page, per_page)
         return jsonify(payload), 200

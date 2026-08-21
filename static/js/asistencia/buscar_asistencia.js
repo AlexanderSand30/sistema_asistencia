@@ -8,6 +8,36 @@ function mostrarTrabajador(data) {
     document.getElementById("datosTrabajador").classList.remove("d-none");
 }
 
+function limpiarFormularioAsistencia() {
+    ["infoTrabajadorId", "infoDni", "infoNombres", "infoApellidos", "infoCargo", "infoObra", "dniBuscar"]
+        .forEach(id => {
+            const campo = document.getElementById(id);
+            if (campo) campo.value = "";
+        });
+    document.getElementById("datosTrabajador")?.classList.add("d-none");
+    document.getElementById("busquedaTrabajador")?.classList.add("d-none");
+    document.getElementById("contenedorBotonBuscar")?.classList.add("d-none");
+    document.getElementById("btnHabilitarBusqueda")?.classList.remove("d-none");
+}
+
+function cargarTrabajadorDeSesion() {
+    fetch("/api/asistencias/mi-trabajador")
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                mostrarToast("error", data.error);
+                const esAdministrador = modalRegistrarAsistencia?.dataset.puedeBuscar === "1";
+                if (esAdministrador) {
+                    document.getElementById("busquedaTrabajador")?.classList.remove("d-none");
+                    document.getElementById("contenedorBotonBuscar")?.classList.remove("d-none");
+                }
+                return;
+            }
+            mostrarTrabajador(data);
+        })
+        .catch(() => mostrarToast("error", "No se pudo cargar el trabajador vinculado."));
+}
+
 function buscarTrabajadorPorDni() {
     const dni = document.getElementById("dniBuscar").value.trim();
 
@@ -38,13 +68,7 @@ document.getElementById("btnHabilitarBusqueda")?.addEventListener("click", funct
     this.classList.add("d-none");
 });
 
-fetch("/api/asistencias/mi-trabajador")
-    .then(res => res.json())
-    .then(data => {
-        if (data.error) {
-            mostrarToast("error", data.error);
-            return;
-        }
-        mostrarTrabajador(data);
-    })
-    .catch(() => mostrarToast("error", "No se pudo cargar el trabajador vinculado."));
+const modalRegistrarAsistencia = document.getElementById("modalRegistrarAsistencia");
+modalRegistrarAsistencia?.addEventListener("show.bs.modal", limpiarFormularioAsistencia);
+modalRegistrarAsistencia?.addEventListener("shown.bs.modal", cargarTrabajadorDeSesion);
+modalRegistrarAsistencia?.addEventListener("hidden.bs.modal", limpiarFormularioAsistencia);

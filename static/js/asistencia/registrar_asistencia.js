@@ -16,8 +16,8 @@ document.getElementById("btnRegistrar").addEventListener("click", function () {
     .then(data => {
         if (data.error) { mostrarToast("error", data.error); return; }
         mostrarToast("success", "Asistencia registrada");
-        document.getElementById("datosTrabajador").classList.add("d-none");
-        document.getElementById("dniBuscar").value = "";
+        const modal = document.getElementById("modalRegistrarAsistencia");
+        bootstrap.Modal.getOrCreateInstance(modal).hide();
         cargarAsistencias();
     })
     .catch(err => console.error("Error al registrar:", err));
