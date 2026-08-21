@@ -9,35 +9,47 @@ from services.pdf_service import html_a_pdf
 service = ReporteService()
 
 
+def _es_administrador():
+    return session.get("rol") in ("admin", "superadmin")
+
+
+def _usuario_id_reporte():
+    return None if _es_administrador() else session.get("usuario_id")
+
+
 def obtener_datos_reporte():
-    if session.get('rol') not in ['admin', 'supervisor']:
+    if not session.get("usuario_id"):
         return jsonify({"error": "No autorizado"}), 403
     try:
         fecha_inicio = request.args.get("inicio")
         fecha_fin = request.args.get("fin")
-        dni = request.args.get("dni") or None
+        dni = request.args.get("dni") or None if _es_administrador() else None
 
         if not fecha_inicio or not fecha_fin:
             return jsonify({"error": "Ingrese fecha inicio y fecha fin"}), 400
 
-        datos = service.obtener_reporte(fecha_inicio, fecha_fin, dni)
+        datos = service.obtener_reporte(
+            fecha_inicio, fecha_fin, dni, _usuario_id_reporte()
+        )
         return jsonify(datos), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 def exportar_pdf():
-    if session.get('rol') not in ['admin', 'supervisor']:
+    if not session.get("usuario_id"):
         return jsonify({"error": "No autorizado"}), 403
     try:
         fecha_inicio = request.args.get("inicio")
         fecha_fin = request.args.get("fin")
-        dni = request.args.get("dni") or None
+        dni = request.args.get("dni") or None if _es_administrador() else None
 
         if not fecha_inicio or not fecha_fin:
             return jsonify({"error": "Ingrese fecha inicio y fecha fin"}), 400
 
-        datos = service.obtener_reporte(fecha_inicio, fecha_fin, dni)
+        datos = service.obtener_reporte(
+            fecha_inicio, fecha_fin, dni, _usuario_id_reporte()
+        )
 
         html_renderizado = render_template(
             "reportes/reporte_pdf.html",

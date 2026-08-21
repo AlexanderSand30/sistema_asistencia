@@ -6,7 +6,7 @@ from database.conexion import obtener_conexion
 
 class ReporteService:
 
-    def obtener_reporte(self, fecha_inicio, fecha_fin, dni=None):
+    def obtener_reporte(self, fecha_inicio, fecha_fin, dni=None, usuario_id=None):
         conn, cursor = None, None
         try:
             conn = obtener_conexion()
@@ -20,6 +20,10 @@ class ReporteService:
                 WHERE a.fecha BETWEEN %s AND %s
             """
             parametros = [fecha_inicio, fecha_fin]
+
+            if usuario_id is not None:
+                sql += " AND a.created_by = %s"
+                parametros.append(usuario_id)
 
             if dni:
                 sql += " AND t.dni = %s"

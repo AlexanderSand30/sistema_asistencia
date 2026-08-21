@@ -12,7 +12,7 @@ from config.constants import ROLES, PASSWORD_MIN_LENGTH
 from utils.decorators import login_required, admin_required
 from controllers.usuario_controller import UsuarioController
 
-usuario_bp = Blueprint("usuario", __name__, url_prefix="/usuarios")
+usuario_bp = Blueprint("usuario", __name__)
 
 
 @usuario_bp.route("/perfil", methods=["GET", "POST"])
@@ -59,7 +59,7 @@ def perfil():
     )
 
 
-@usuario_bp.route("/")
+@usuario_bp.route("/usuarios/")
 @login_required
 @admin_required
 def listar():
@@ -75,7 +75,7 @@ def listar():
     )
 
 
-@usuario_bp.route("/crear", methods=["GET", "POST"])
+@usuario_bp.route("/usuarios/crear", methods=["GET", "POST"])
 @login_required
 @admin_required
 def crear():
@@ -108,7 +108,7 @@ def crear():
     return redirect(url_for("usuario.listar"))
 
 
-@usuario_bp.route("/editar/<int:id>", methods=["GET", "POST"])
+@usuario_bp.route("/usuarios/editar/<int:id>", methods=["GET", "POST"])
 @login_required
 @admin_required
 def editar(id):
@@ -137,7 +137,7 @@ def editar(id):
     return redirect(url_for("usuario.listar"))
 
 
-@usuario_bp.route("/eliminar/<int:id>", methods=["POST"])
+@usuario_bp.route("/usuarios/eliminar/<int:id>", methods=["POST"])
 @login_required
 @admin_required
 def eliminar(id):
@@ -149,7 +149,7 @@ def eliminar(id):
     return redirect(url_for("usuario.listar"))
 
 
-@usuario_bp.route("/toggle-estado/<int:id>", methods=["POST"])
+@usuario_bp.route("/usuarios/toggle-estado/<int:id>", methods=["POST"])
 @login_required
 @admin_required
 def toggle_estado(id):

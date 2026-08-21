@@ -4,6 +4,7 @@ document.getElementById("btnBuscarReporte").addEventListener("click", function (
     const dni = document.getElementById("dniReporte").value.trim();
     const cuerpo = document.getElementById("cuerpoTablaReporte");
     const totalResultados = document.getElementById("totalResultados");
+    const btnExportarPDF = document.getElementById("btnExportarPDF");
 
     if (!inicio || !fin) {
         mostrarToast("warning", "Selecciona la fecha de inicio y fecha fin");
@@ -21,12 +22,14 @@ document.getElementById("btnBuscarReporte").addEventListener("click", function (
             if (data.error) {
                 cuerpo.innerHTML = `<tr><td colspan="9" class="text-center text-danger">${data.error}</td></tr>`;
                 totalResultados.textContent = "";
+                btnExportarPDF.disabled = true;
                 return;
             }
 
             if (data.length === 0) {
                 cuerpo.innerHTML = `<tr><td colspan="9" class="text-center text-muted">Sin registros en este rango</td></tr>`;
                 totalResultados.textContent = "";
+                btnExportarPDF.disabled = true;
                 return;
             }
 
@@ -47,9 +50,11 @@ document.getElementById("btnBuscarReporte").addEventListener("click", function (
             });
 
             totalResultados.textContent = `${data.length} registro(s) encontrado(s)`;
+            btnExportarPDF.disabled = false;
         })
         .catch(err => {
             cuerpo.innerHTML = `<tr><td colspan="9" class="text-center text-danger">Error al cargar los datos</td></tr>`;
+            btnExportarPDF.disabled = true;
             console.error(err);
         });
 });

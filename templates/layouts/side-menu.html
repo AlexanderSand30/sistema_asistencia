@@ -75,7 +75,7 @@
                         <span>Usuarios</span>
                     </a>
                 {% endif %}
-                <a href="{{ url_for('usuario.perfil') }}" class="nav-link {% if request.path.startswith('/usuarios/perfil') %}active{% endif %}">
+                <a href="{{ url_for('usuario.perfil') }}" class="nav-link {% if request.path.startswith('/perfil') %}active{% endif %}">
                     <i class="bi bi-person-circle"></i>
                     <span>Mi perfil</span>
                 </a>

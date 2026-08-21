@@ -2,66 +2,79 @@
 
 {% block content %}
 
-<div>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Módulo Reportes</h4>
-    </div>
-    <hr>
+    <div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Módulo Reportes</h4>
+        </div>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <h6 class="card-title">Filtrar Reporte</h6>
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label>Fecha Inicio</label>
-                    <input type="date" id="fechaInicio" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <label>Fecha Fin</label>
-                    <input type="date" id="fechaFin" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <label>DNI (opcional)</label>
-                    <input type="text" id="dniReporte" class="form-control" maxlength="8" placeholder="Todos">
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-primary w-100" id="btnBuscarReporte">🔍 Buscar</button>
+        <div class="card card-soft mb-4" id="formReporte" novalidate>
+            <div class="card-body">
+                <h6 class="card-title mb-3">Filtrar Reporte</h6>
+                <div class="row g-3 align-items-end">
+                    <div class="col-sm-4 col-lg-3">
+                        <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                        <input type="date" id="fechaInicio" name="fechaInicio" class="form-control form-control-sm" required>
+                        <div class="invalid-feedback">Selecciona la fecha de inicio.</div>
+                    </div>
+                    <div class="col-sm-4 col-lg-3">
+                        <label for="fechaFin" class="form-label">Fecha Fin</label>
+                        <input type="date" id="fechaFin" name="fechaFin" class="form-control form-control-sm" required>
+                        <div class="invalid-feedback">La fecha fin debe ser igual o posterior a la fecha inicio.</div>
+                    </div>
+                    <div class="col-sm-4 col-lg-3 {% if session.get('rol') not in ('admin', 'superadmin') %}d-none{% endif %}">
+                        <label for="dniReporte" class="form-label">DNI (opcional)</label>
+                        <input type="text" id="dniReporte" name="dniReporte" class="form-control form-control-sm" maxlength="8" inputmode="numeric" pattern="[0-9]{8}" placeholder="Todos" autocomplete="off" {% if session.get('rol') not in ('admin', 'superadmin') %}disabled{% endif %}>
+                        <div class="invalid-feedback">Debe tener 8 dígitos.</div>
+                    </div>
+                    <div class="col-sm-4 col-lg-3 d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-primary flex-grow-1" id="btnBuscarReporte">
+                            <span class="spinner-border spinner-border-sm d-none" id="spinnerBuscar" role="status" aria-hidden="true"></span>
+                            <span id="btnBuscarLabel">Buscar</span>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnLimpiarFiltros" title="Limpiar filtros">
+                            Limpiar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <span class="text-muted small" id="totalResultados"></span>
-        <button class="btn btn-danger" id="btnExportarPDF">📄 Exportar PDF</button>
-    </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted small" id="totalResultados" aria-live="polite"></span>
+            <button class="btn btn-sm btn-danger" id="btnExportarPDF" disabled>
+                Exportar PDF
+            </button>
+        </div>
 
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>DNI</th>
-                <th>Nombres</th>
-                <th>Apellidos</th>
-                <th>Obra</th>
-                <th>Cargo</th>
-                <th>Fecha</th>
-                <th>Entrada</th>
-                <th>Salida</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody id="cuerpoTablaReporte">
-            <tr>
-                <td colspan="9" class="text-center text-muted">Elige un rango de fechas y haz clic en "Buscar"</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+        <div class="overflow-auto">
+            <table class="table table-bordered table-hover align-middle table-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">DNI</th>
+                        <th scope="col">Nombres</th>
+                        <th scope="col">Apellidos</th>
+                        <th scope="col">Obra</th>
+                        <th scope="col">Cargo</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col" class="text-nowrap">Entrada</th>
+                        <th scope="col" class="text-nowrap">Salida</th>
+                        <th scope="col">Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTablaReporte">
+                    <tr id="filaEstadoInicial">
+                        <td colspan="9" class="text-center text-muted py-4">
+                            Elige un rango de fechas y haz clic en «Buscar»
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 {% endblock %}
 
 {% block extra_js %}
-<script src="{{ url_for('static', filename='js/trabajadores/sidebar.js') }}"></script>
-<script src="{{ url_for('static', filename='js/reportes/listar_reportes.js') }}"></script>
-<script src="{{ url_for('static', filename='js/reportes/exportar_pdf.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/reportes/listar_reportes.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/reportes/exportar_pdf.js') }}"></script>
 {% endblock %}
