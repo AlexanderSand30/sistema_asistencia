@@ -12,10 +12,10 @@
 
         <form method="GET" class="row g-2 mb-3">
             <div class="col-md-7">
-                <input type="text" name="q" value="{{ busqueda }}" class="form-control form-control-sm" placeholder="Buscar por usuario, nombre o rol..." autocomplete="off">
+                <input type="text" name="q" value="{{ busqueda }}" class="form-control form-control-sm" placeholder="Buscar por usuario, nombre o rol..." autocomplete="off" onchange="event.target.form.submit()" onclick="this.select()">
             </div>
             <div class="col-md-3">
-                <select name="estado" class="form-select form-select-sm" aria-label="Filtrar usuarios por estado">
+                <select name="estado" class="form-select form-select-sm" aria-label="Filtrar usuarios por estado" onchange="event.target.form.submit()">
                     <option value="activos" {{ 'selected' if estado == 'activos' }}>Activos</option>
                     <option value="inactivos" {{ 'selected' if estado == 'inactivos' }}>Inactivos</option>
                     <option value="todos" {{ 'selected' if estado == 'todos' }}>Todos</option>
@@ -101,7 +101,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="tituloModalUsuario">Nuevo usuario</h5>
+                    <h5 class="modal-title text-uppercase" id="tituloModalUsuario">Nuevo usuario</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <form id="formUsuario" method="POST" autocomplete="off">
@@ -151,43 +151,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script>
-        const formUsuario = document.getElementById("formUsuario");
-        const tituloModalUsuario = document.getElementById("tituloModalUsuario");
-        const passwordUsuario = document.getElementById("passwordUsuario");
-        const ayudaPassword = document.getElementById("ayudaPassword");
-        const contenedorEstadoUsuario = document.getElementById("contenedorEstadoUsuario");
-        const estadoUsuario = document.getElementById("estadoUsuario");
-
-        function prepararNuevoUsuario() {
-            formUsuario.reset();
-            formUsuario.action = "{{ url_for('usuario.crear') }}";
-            tituloModalUsuario.textContent = "Nuevo usuario";
-            passwordUsuario.required = true;
-            ayudaPassword.textContent = "Mínimo 6 caracteres.";
-            contenedorEstadoUsuario.classList.add("d-none");
-        }
-
-        function prepararEditarUsuario(boton) {
-            const {
-                id,
-                nombre,
-                usuario,
-                nroDocumento,
-                rol,
-                estado
-            } = boton.dataset;
-            formUsuario.reset();
-            formUsuario.action = `/usuarios/editar/${id}`;
-            tituloModalUsuario.textContent = "Editar usuario";
-            document.getElementById("nombreUsuario").value = nombre;
-            document.getElementById("nroDocumentoUsuario").value = nroDocumento || "";
-            document.getElementById("loginUsuario").value = usuario;
-            document.getElementById("rolUsuario").value = rol;
-            estadoUsuario.checked = Boolean(estado);
-            passwordUsuario.required = false;
-            ayudaPassword.textContent = "Déjala vacía para conservar la contraseña actual.";
-            contenedorEstadoUsuario.classList.remove("d-none");
-        }
-    </script>
+    <script src="{{ url_for('static', filename='js/usuarios/list-user.js') }}"></script>
 {% endblock %}

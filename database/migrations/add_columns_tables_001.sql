@@ -31,11 +31,11 @@ ALTER TABLE trabajador
     ADD COLUMN fecha_nac DATE NULL AFTER cargo,
     ADD COLUMN fecha_ingreso DATE NULL AFTER fecha_nac,
     ADD COLUMN fecha_cese DATE NULL AFTER fecha_ingreso,
+    ADD COLUMN created_by INT DEFAULT NULL,
+    ADD COLUMN updated_by INT DEFAULT NULL,
     ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ADD COLUMN updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
-    ADD COLUMN created_by INT DEFAULT NULL,
-    ADD COLUMN updated_by INT DEFAULT NULL;
 
 ALTER TABLE asistencia
 
@@ -84,3 +84,23 @@ ALTER TABLE usuario
         FOREIGN KEY (deleted_by) REFERENCES usuario(id),
     ADD CONSTRAINT uq_usuario_usuario UNIQUE (usuario);
 
+CREATE TABLE login_logs (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id BIGINT UNSIGNED NULL,
+    username VARCHAR(45) NULL,
+    login_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ip_address VARCHAR(45) NULL,
+    user_agent TEXT NULL,
+    browser VARCHAR(100) NULL,
+    operating_system VARCHAR(100) NULL,
+    device VARCHAR(100) NULL,
+    success BOOLEAN NOT NULL DEFAULT TRUE,
+
+    PRIMARY KEY (id),
+    INDEX idx_login_user (user_id),
+    INDEX idx_login_date (login_at),
+    INDEX idx_login_ip (ip_address),
+    INDEX idx_login_username (username)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;

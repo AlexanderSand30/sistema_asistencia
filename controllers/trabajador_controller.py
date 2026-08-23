@@ -129,6 +129,7 @@ def crear_trabajador():
             fecha_nac=fecha_nac,
             fecha_ingreso=fecha_ingreso,
             fecha_cese=fecha_cese,
+            created_by=session.get("usuario_id"),
         )
         service.crear(t)
         return jsonify({"mensaje": "Trabajador creado correctamente"}), 201

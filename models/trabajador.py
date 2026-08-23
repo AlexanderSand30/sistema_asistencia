@@ -1,6 +1,7 @@
 from config.extensions import db
 
-from sqlalchemy import Boolean, Column, Integer, String, Date
+from sqlalchemy import Boolean, Column, Integer, String, Date, ForeignKey
+from sqlalchemy.orm import relationship
 
 
 class Trabajador(db.Model):
@@ -16,12 +17,11 @@ class Trabajador(db.Model):
     fecha_ingreso = Column(Date, nullable=False)
     fecha_cese = Column(Date, nullable=True)
     estado = Column(Boolean, nullable=False, default=True)
+    created_by = Column(Integer, ForeignKey("usuario.id"), nullable=True)
+    updated_by = Column(Integer, ForeignKey("usuario.id"), nullable=True)
 
     def nombre_completo(self):
         return f"{self.nombres} {self.apellidos}"
-
-    def __repr__(self):
-        return f"<Trabajador {self.dni} - {self.nombre_completo()}>"
 
     def to_dict(self):
         return {
@@ -37,3 +37,6 @@ class Trabajador(db.Model):
             "fecha_cese": self.fecha_cese.isoformat() if self.fecha_cese else None,
             "estado": self.estado,
         }
+
+    def __repr__(self):
+        return f"<Trabajador {self.dni} - {self.nombre_completo()}>"

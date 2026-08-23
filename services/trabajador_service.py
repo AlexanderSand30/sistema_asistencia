@@ -1,3 +1,4 @@
+from flask import session
 from datetime import date
 
 from config.extensions import db
@@ -8,10 +9,16 @@ from sqlalchemy.exc import IntegrityError
 class TrabajadorService:
 
     def listar(self):
-        return Trabajador.query.filter_by(estado=True).order_by(Trabajador.apellidos).all()
+        return (
+            Trabajador.query.filter_by(estado=True).order_by(Trabajador.apellidos).all()
+        )
 
     def listar_inactivos(self):
-        return Trabajador.query.filter_by(estado=False).order_by(Trabajador.apellidos).all()
+        return (
+            Trabajador.query.filter_by(estado=False)
+            .order_by(Trabajador.apellidos)
+            .all()
+        )
 
     def buscar_por_dni(self, dni):
         return Trabajador.query.filter_by(dni=dni, estado=True).first()
@@ -22,7 +29,9 @@ class TrabajadorService:
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-            raise Exception(f"Ya existe un trabajador registrado con el DNI {trabajador.dni}")
+            raise Exception(
+                f"Ya existe un trabajador registrado con el DNI {trabajador.dni}"
+            )
         return trabajador.id
 
     def actualizar(self, trabajador):
@@ -36,6 +45,8 @@ class TrabajadorService:
         existente.fecha_nac = trabajador.fecha_nac
         existente.fecha_ingreso = trabajador.fecha_ingreso
         existente.fecha_cese = trabajador.fecha_cese
+        existente.updated_by = session.get("usuario_id")
+
         try:
             db.session.commit()
         except IntegrityError:
@@ -48,6 +59,7 @@ class TrabajadorService:
             raise Exception("Trabajador no encontrado")
         trabajador.estado = False
         trabajador.fecha_cese = trabajador.fecha_cese or date.today()
+        trabajador.updated_by = session.get("usuario_id")
         db.session.commit()
 
     def reactivar(self, id):
