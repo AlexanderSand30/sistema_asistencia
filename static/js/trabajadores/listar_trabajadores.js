@@ -62,7 +62,7 @@ function cargarTrabajadores(pagina = 1) {
     if (!cuerpo) return;
 
     estadoTrabajadores.page = pagina;
-    cuerpo.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Cargando trabajadores...</td></tr>';
+    cuerpo.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Cargando trabajadores...</td></tr>';
 
     fetch(`/api/trabajadores?page=${pagina}&per_page=${estadoTrabajadores.perPage}`)
         .then(async res => {
@@ -74,15 +74,15 @@ function cargarTrabajadores(pagina = 1) {
         })
         .then(data => {
             const trabajadores = Array.isArray(data.items) ? data.items : [];
-            estadoTrabajadores.total      = Number(data.total || 0);
+            estadoTrabajadores.total = Number(data.total || 0);
             estadoTrabajadores.totalPages = Number(data.total_pages || 1);
-            estadoTrabajadores.page       = Number(data.page || pagina);
-            estadoTrabajadores.perPage    = Number(data.per_page || estadoTrabajadores.perPage);
+            estadoTrabajadores.page = Number(data.page || pagina);
+            estadoTrabajadores.perPage = Number(data.per_page || estadoTrabajadores.perPage);
 
             cuerpo.innerHTML = "";
 
             if (trabajadores.length === 0) {
-                cuerpo.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No hay trabajadores activos.</td></tr>';
+                cuerpo.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No hay trabajadores activos.</td></tr>';
                 if (resumen) resumen.textContent = "0 trabajadores registrados";
                 renderPaginacionTrabajadores();
                 return;
@@ -98,8 +98,10 @@ function cargarTrabajadores(pagina = 1) {
                         <td>${nombres}</td>
                         <td>${apellidos}</td>
                         <td>${cargo}</td>
+                        <td>${escapeHtml(t.fecha_ingreso || "-")}</td>
+                        <td>${escapeHtml(t.fecha_cese || "-")}</td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-warning me-1" type="button" onclick="editarTrabajador(${t.id}, '${escapeHtml(t.dni || "")}', '${nombres.replace(/'/g, "&#039;")}', '${apellidos.replace(/'/g, "&#039;")}', '${cargo.replace(/'/g, "&#039;")}')" title="Editar trabajador">✏️</button>
+                            <button class="btn btn-sm btn-warning me-1" type="button" onclick="editarTrabajador(${t.id})" title="Editar trabajador">✏️</button>
                             <button class="btn btn-sm btn-danger" type="button" onclick="eliminarTrabajador(${t.id})" title="Eliminar trabajador">🗑️</button>
                         </td>
                     </tr>`;

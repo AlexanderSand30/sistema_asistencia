@@ -2,7 +2,7 @@ from flask import session
 from sqlalchemy import func
 
 from models.asistencia_model import Asistencia
-from models.trabajador_model import Trabajador
+from models.trabajador import Trabajador
 from models.usuario import Usuario
 
 

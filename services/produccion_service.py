@@ -1,7 +1,7 @@
 from datetime import datetime, time, timedelta
 
 from models.asistencia_model import Asistencia
-from models.trabajador_model import Trabajador
+from models.trabajador import Trabajador
 
 HORAS_SEMANALES_LEGALES = 48
 

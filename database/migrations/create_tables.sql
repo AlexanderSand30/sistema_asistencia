@@ -29,5 +29,7 @@ CREATE TABLE trabajador (
   nombres varchar(100) NOT NULL,
   apellidos varchar(100) NOT NULL,
   cargo varchar(100) DEFAULT NULL,
+  fecha_ingreso date NOT NULL,
+  fecha_cese date DEFAULT NULL,
   estado tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

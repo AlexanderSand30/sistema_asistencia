@@ -58,18 +58,16 @@
                         <i class="bi bi-clipboard-check-fill"></i>
                         <span>Asistencia</span>
                     </a>
+                {% endif %}
+                {% if session.get('rol') in ('admin', 'superadmin') %}
                     <a href="/reportes" class="nav-link {% if request.path.startswith('/reportes') %}active{% endif %}">
                         <i class="bi bi-bar-chart-fill"></i>
                         <span>Reportes</span>
                     </a>
-                {% endif %}
-                {% if session.get('rol') in ('admin', 'superadmin') %}
                     <a href="/produccion" class="nav-link {% if request.path.startswith('/produccion') %}active{% endif %}">
                         <i class="bi bi-building-fill"></i>
                         <span>Producción</span>
                     </a>
-                {% endif %}
-                {% if session.get('rol') in ('admin', 'superadmin') %}
                     <a href="/usuarios" class="nav-link {% if request.path.startswith('/usuarios') %}active{% endif %}">
                         <i class="bi bi-person-fill-gear"></i>
                         <span>Usuarios</span>

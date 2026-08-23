@@ -15,7 +15,7 @@ function cargarInactivos() {
             cuerpo.innerHTML = "";
 
             if (trabajadores.length === 0) {
-                cuerpo.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-3">No hay trabajadores inactivos</td></tr>`;
+                cuerpo.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-3">No hay trabajadores inactivos</td></tr>`;
                 return;
             }
 
@@ -26,6 +26,8 @@ function cargarInactivos() {
                         <td>${t.nombres}</td>
                         <td>${t.apellidos}</td>
                         <td>${t.cargo ?? ""}</td>
+                        <td>${t.fecha_ingreso || "-"}</td>
+                        <td>${t.fecha_cese || "-"}</td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-success" type="button" onclick="reactivarTrabajador(${t.id})">♻️ Reactivar</button>
                         </td>

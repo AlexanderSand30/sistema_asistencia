@@ -2,7 +2,7 @@ from datetime import time
 
 from config.extensions import db
 from models.asistencia_model import Asistencia
-from models.trabajador_model import Trabajador
+from models.trabajador import Trabajador
 from utils.tiempo import ahora
 
 

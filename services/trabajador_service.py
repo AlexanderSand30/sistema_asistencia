@@ -1,5 +1,7 @@
+from datetime import date
+
 from config.extensions import db
-from models.trabajador_model import Trabajador
+from models.trabajador import Trabajador
 from sqlalchemy.exc import IntegrityError
 
 
@@ -31,6 +33,9 @@ class TrabajadorService:
         existente.nombres = trabajador.nombres
         existente.apellidos = trabajador.apellidos
         existente.cargo = trabajador.cargo
+        existente.fecha_nac = trabajador.fecha_nac
+        existente.fecha_ingreso = trabajador.fecha_ingreso
+        existente.fecha_cese = trabajador.fecha_cese
         try:
             db.session.commit()
         except IntegrityError:
@@ -42,6 +47,7 @@ class TrabajadorService:
         if not trabajador:
             raise Exception("Trabajador no encontrado")
         trabajador.estado = False
+        trabajador.fecha_cese = trabajador.fecha_cese or date.today()
         db.session.commit()
 
     def reactivar(self, id):
@@ -49,4 +55,5 @@ class TrabajadorService:
         if not trabajador:
             raise Exception("Trabajador no encontrado")
         trabajador.estado = True
+        trabajador.fecha_cese = None
         db.session.commit()

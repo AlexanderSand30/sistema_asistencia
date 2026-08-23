@@ -43,7 +43,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 dni: dni,
                 nombres: document.getElementById("nombres").value.trim(),
                 apellidos: document.getElementById("apellidos").value.trim(),
-                cargo: document.getElementById("cargo").value.trim()
+                cargo: document.getElementById("cargo").value.trim(),
+                fecha_nac: document.getElementById("f_nac").value.trim(),
+                fecha_ingreso: document.getElementById("f_ini").value.trim(),
+                fecha_cese: document.getElementById("f_cese").value.trim()
             };
 
             const url = id ? `/api/trabajadores/${id}` : "/api/trabajadores";
