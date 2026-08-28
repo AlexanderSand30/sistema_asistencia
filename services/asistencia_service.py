@@ -1,4 +1,5 @@
-from datetime import time
+from datetime import time, date
+
 
 from config.extensions import db
 from models.asistencia_model import Asistencia
@@ -48,7 +49,14 @@ class AsistenciaService:
             raise
         return asistencia.id
 
-    def listar(self, fecha_inicio=None, fecha_fin=None, usuario_id=None, pagina=1, por_pagina=10):
+    def listar(
+        self,
+        fecha_inicio=None,
+        fecha_fin=None,
+        usuario_id=None,
+        pagina=1,
+        por_pagina=10,
+    ):
         query = db.session.query(Asistencia, Trabajador).join(
             Trabajador, Asistencia.trabajador_id == Trabajador.id
         )
@@ -58,9 +66,9 @@ class AsistenciaService:
         if usuario_id is not None:
             query = query.filter(Asistencia.created_by == usuario_id)
 
-        paginacion = query.order_by(Asistencia.fecha.desc(), Asistencia.id.desc()).paginate(
-            page=pagina, per_page=por_pagina, error_out=False
-        )
+        paginacion = query.order_by(
+            Asistencia.fecha.desc(), Asistencia.id.desc()
+        ).paginate(page=pagina, per_page=por_pagina, error_out=False)
         items = [
             (
                 asistencia.id,
@@ -91,7 +99,9 @@ class AsistenciaService:
             "total_paginas": paginacion.pages,
         }
 
-    def marcar_entrada(self, id, hora_entrada, foto=None, lat=None, lng=None, usuario_id=None):
+    def marcar_entrada(
+        self, id, hora_entrada, foto=None, lat=None, lng=None, usuario_id=None
+    ):
         query = Asistencia.query.filter_by(id=id)
         if usuario_id is not None:
             query = query.filter_by(created_by=usuario_id)
@@ -108,7 +118,9 @@ class AsistenciaService:
         asistencia.lng_entrada = lng
         db.session.commit()
 
-    def marcar_salida(self, id, hora_salida, foto=None, lat=None, lng=None, usuario_id=None):
+    def marcar_salida(
+        self, id, hora_salida, foto=None, lat=None, lng=None, usuario_id=None
+    ):
         query = Asistencia.query.filter_by(id=id)
         if usuario_id is not None:
             query = query.filter_by(created_by=usuario_id)
@@ -119,6 +131,8 @@ class AsistenciaService:
             raise Exception("Ya se marcó la salida anteriormente")
         if asistencia.hora_entrada is None:
             raise Exception("Primero debe marcar la entrada")
+        if asistencia.fecha != date.today():
+            raise Exception("No se puede registrar la salida de una fecha anterior.")
 
         asistencia.hora_salida = self._hora(hora_salida)
         asistencia.foto_salida = foto
