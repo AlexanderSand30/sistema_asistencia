@@ -14,7 +14,9 @@ def obtener_datos_dashboard():
         metricas = {
             "trabajadores_activos": Trabajador.query.filter_by(estado=True).count(),
             "trabajadores_inactivos": Trabajador.query.filter_by(estado=False).count(),
-            "usuarios_activos": Usuario.query.filter_by(estado=True).count(),
+            "usuarios_activos": Usuario.query.filter(
+                Usuario.estado.is_(True), Usuario.rol != "superadmin"
+            ).count(),
             "asistencias_hoy": Asistencia.query.filter(
                 Asistencia.fecha == func.current_date()
             ).count(),

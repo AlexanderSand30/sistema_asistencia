@@ -1,5 +1,8 @@
 import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from services.excel_service import generar_excel
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from flask import request, jsonify, render_template, make_response, session
 from utils.tiempo import ahora
@@ -56,7 +59,7 @@ def exportar_pdf():
             registros=datos,
             fecha_inicio=fecha_inicio,
             fecha_fin=fecha_fin,
-            fecha_generacion=ahora().strftime("%d/%m/%Y %H:%M")
+            fecha_generacion=ahora().strftime("%d/%m/%Y %H:%M"),
         )
 
         pdf_bytes = html_a_pdf(html_renderizado)
@@ -65,7 +68,67 @@ def exportar_pdf():
 
         response = make_response(pdf_bytes)
         response.headers["Content-Type"] = "application/pdf"
-        response.headers["Content-Disposition"] = "inline; filename=reporte_asistencia.pdf"
+        response.headers["Content-Disposition"] = (
+            "inline; filename=reporte_asistencia.pdf"
+        )
         return response
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+def exportar_excel():
+    if not session.get("usuario_id"):
+        return jsonify({"error": "No autorizado"}), 403
+
+    try:
+        fecha_inicio = request.args.get("inicio")
+        fecha_fin = request.args.get("fin")
+        dni = request.args.get("dni") or None if _es_administrador() else None
+
+        if not fecha_inicio or not fecha_fin:
+            return jsonify({"error": "Ingrese fecha inicio y fecha fin"}), 400
+
+        datos = service.obtener_reporte(
+            fecha_inicio, fecha_fin, dni, _usuario_id_reporte()
+        )
+
+        encabezados = [
+            "DNI",
+            "Nombres",
+            "Apellidos",
+            "Obra",
+            "Cargo",
+            "Fecha",
+            "Horas Entrada",
+            "Hora Salida",
+        ]
+        filas = [
+            [
+                d["dni"],
+                d["nombres"],
+                d["apellidos"],
+                d["obra"],
+                d["cargo"],
+                d["fecha"],
+                d["hora_entrada"],
+                d["hora_salida"],
+            ]
+            for d in datos
+        ]
+
+        excel_bytes = generar_excel(
+            titulo=f"Asistencias {fecha_inicio} al {fecha_fin}",
+            encabezados=encabezados,
+            filas=filas,
+            nombre_hoja="Asistencias",
+        )
+
+        response = make_response(excel_bytes)
+        response.headers["Content-Type"] = (
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response.headers["Content-Disposition"] = "attachment; filename=asistencias.xlsx"
+        return response
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500

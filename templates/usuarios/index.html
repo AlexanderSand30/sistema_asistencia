@@ -108,7 +108,12 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="nroDocumentoUsuario" class="form-label">Nro. documento</label>
-                            <input id="nroDocumentoUsuario" name="nro_documento" class="form-control form-control-sm" required maxlength="8" pattern="[0-9]{8}" inputmode="numeric">
+                            <div class="input-group">
+                                <input id="nroDocumentoUsuario" name="nro_documento" class="form-control form-control-sm" onkeydown="if (event.key === 'Enter') ejecutarFuncion()" required maxlength="8" pattern="[0-9]{8}" inputmode="numeric">
+                                <button class="input-group-text input-group-text-sm bg-primary" onclick="searchEmployee()">
+                                    <i class="bi bi-search text-white"></i>
+                                </button>
+                            </div>
                             <div class="form-text">Debe coincidir con el DNI de un trabajador activo.</div>
                         </div>
                         <div class="mb-3">

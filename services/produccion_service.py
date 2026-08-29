@@ -15,10 +15,12 @@ class ProduccionService:
         query = Trabajador.query.filter_by(estado=True)
         if dni:
             query = query.filter(Trabajador.dni == dni)
+
         trabajadores = query.order_by(Trabajador.apellidos).all()
         if not trabajadores:
             return []
 
+        # Traer las asistencias de los trabajadores activos
         ids_trabajadores = [trabajador.id for trabajador in trabajadores]
         asistencias = Asistencia.query.filter(
             Asistencia.trabajador_id.in_(ids_trabajadores),
@@ -36,20 +38,20 @@ class ProduccionService:
         dia = fecha_inicio
         while dia <= fecha_fin:
             dia_semana = dia.weekday()
-            if dia_semana != 6:
+            if dia_semana != 6: # Contar de lunes a sabados
                 semana_key = dia.isocalendar()[:2]
                 for trabajador_id in ids_trabajadores:
                     clave = (trabajador_id, semana_key)
-                    acumulado_semanal.setdefault(
-                        clave, {"horas": 0.0, "faltas": 0}
-                    )
+                    acumulado_semanal.setdefault(clave, {"horas": 0.0, "faltas": 0})
                     registros_dia = mapa_asistencia.get((trabajador_id, dia))
                     if not registros_dia:
                         acumulado_semanal[clave]["faltas"] += 1
                     else:
                         for hora_entrada, hora_salida in registros_dia:
                             if hora_entrada and hora_salida:
-                                acumulado_semanal[clave]["horas"] += self._calcular_horas_dia(
+                                acumulado_semanal[clave][
+                                    "horas"
+                                ] += self._calcular_horas_dia(
                                     hora_entrada, hora_salida, dia_semana
                                 )
             dia += timedelta(days=1)
@@ -71,7 +73,9 @@ class ProduccionService:
                 "nombres": trabajador.nombres,
                 "apellidos": trabajador.apellidos,
                 "cargo": trabajador.cargo,
-                "horas_trabajadas": round(resumen[trabajador.id]["horas_trabajadas"], 2),
+                "horas_trabajadas": round(
+                    resumen[trabajador.id]["horas_trabajadas"], 2
+                ),
                 "horas_extra": round(resumen[trabajador.id]["horas_extra"], 2),
                 "faltas": resumen[trabajador.id]["faltas"],
             }

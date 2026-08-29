@@ -14,6 +14,6 @@ def vista_produccion():
     return render_template("produccion/index.html")
 
 
-produccion_bp.route("/api/produccion", methods=["GET"])(obtener_resumen_produccion)
-produccion_bp.route("/produccion/pdf", methods=["GET"])(exportar_pdf_produccion)
-produccion_bp.route("/produccion/excel", methods=["GET"])(exportar_excel_produccion)
+produccion_bp.route("/api/produccion", methods=["GET"])(login_required(obtener_resumen_produccion))
+produccion_bp.route("/produccion/pdf", methods=["GET"])(login_required(exportar_pdf_produccion))
+produccion_bp.route("/produccion/excel", methods=["GET"])(login_required(exportar_excel_produccion))

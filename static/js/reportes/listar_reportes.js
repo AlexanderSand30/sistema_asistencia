@@ -5,6 +5,7 @@ document.getElementById("btnBuscarReporte").addEventListener("click", function (
     const cuerpo = document.getElementById("cuerpoTablaReporte");
     const totalResultados = document.getElementById("totalResultados");
     const btnExportarPDF = document.getElementById("btnExportarPDF");
+    const btnExportarExcel = document.getElementById("btnExportarExcel");
 
     if (!inicio || !fin) {
         mostrarToast("warning", "Selecciona la fecha de inicio y fecha fin");
@@ -23,6 +24,7 @@ document.getElementById("btnBuscarReporte").addEventListener("click", function (
                 cuerpo.innerHTML = `<tr><td colspan="9" class="text-center text-danger">${data.error}</td></tr>`;
                 totalResultados.textContent = "";
                 btnExportarPDF.disabled = true;
+                btnExportarExcel.disabled = true;
                 return;
             }
 
@@ -30,6 +32,7 @@ document.getElementById("btnBuscarReporte").addEventListener("click", function (
                 cuerpo.innerHTML = `<tr><td colspan="9" class="text-center text-muted">Sin registros en este rango</td></tr>`;
                 totalResultados.textContent = "";
                 btnExportarPDF.disabled = true;
+                btnExportarExcel.disabled = true;
                 return;
             }
 
@@ -51,6 +54,7 @@ document.getElementById("btnBuscarReporte").addEventListener("click", function (
 
             totalResultados.textContent = `${data.length} registro(s) encontrado(s)`;
             btnExportarPDF.disabled = false;
+            btnExportarExcel.disabled = false;
         })
         .catch(err => {
             cuerpo.innerHTML = `<tr><td colspan="9" class="text-center text-danger">Error al cargar los datos</td></tr>`;
@@ -58,3 +62,26 @@ document.getElementById("btnBuscarReporte").addEventListener("click", function (
             console.error(err);
         });
 });
+
+document.getElementById("btnLimpiarFiltros").addEventListener("click", function () {
+    // Limpiar filtros
+    document.getElementById("fechaInicio").value = "";
+    document.getElementById("fechaFin").value = "";
+    document.getElementById("dniReporte").value = "";
+
+    // Limpiar resultados
+    document.getElementById("cuerpoTablaReporte").innerHTML = `
+        <tr id="filaEstadoInicial">
+            <td colspan="9" class="text-center text-muted py-4">
+                Elige un rango de fechas y haz clic en «Buscar»
+            </td>
+        </tr>
+    `;
+
+    // Limpiar contador
+    document.getElementById("totalResultados").textContent = "";
+
+    // Deshabilitar botones de exportación
+    document.getElementById("btnExportarPDF").disabled = true;
+    document.getElementById("btnExportarExcel").disabled = true;
+})

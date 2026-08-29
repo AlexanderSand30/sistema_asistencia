@@ -182,3 +182,11 @@ def reactivar_trabajador(id):
         return jsonify({"mensaje": "Trabajador reactivado correctamente"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+def search_trabajador(nro_documento):
+    try:
+        trabajador = Trabajador.query.filter_by(dni=nro_documento).first()
+        return jsonify(trabajador.to_dict()), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

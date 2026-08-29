@@ -238,6 +238,28 @@ body {
 .input-group-text {
     background: #f8f9fa;
     color: #6c757d;
+    --tw-border-opacity: 1;
+    --tw-bg-opacity: 1;
+    --tw-text-opacity: 1;
+    --tw-shadow: 0 1px 2px 0 rgba(0, 0, 0, .05);
+    border-width: 1px;
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+    padding: .5rem .75rem
+}
+
+.input-group .input-group-text-sm {
+    --tw-border-opacity: 1;
+    --tw-bg-opacity: 1;
+    --tw-text-opacity: 1;
+    --tw-shadow: 0 1px 2px 0 rgba(0, 0, 0, .05);
+    background-color: rgba(247, 250, 252, var(--tw-bg-opacity));
+    border-color: rgba(226, 232, 240, var(--tw-border-opacity));
+    border-width: 1px;
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+    color: rgba(113, 128, 150, var(--tw-text-opacity));
+    font-size: .75rem;
+    line-height: 1rem;
+    padding: .375rem .5rem
 }
 
 /* =========================================

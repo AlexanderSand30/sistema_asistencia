@@ -39,3 +39,24 @@ function prepararEditarUsuario(boton) {
     ayudaPassword.textContent = "Déjala vacía para conservar la contraseña actual.";
     contenedorEstadoUsuario.classList.remove("d-none");
 }
+
+function searchEmployee() {
+    const nroDoc = nroDocumento.value;
+    if (!nroDoc) return;
+
+    fetch(`/api/search-trabajador/${nroDoc}`)
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || "No se pudo cargar la información");
+            }
+            return data;
+        })
+        .then(data => {
+            document.getElementById("nombreUsuario").value = data.nombres + ' ' + data.apellidos;
+            mostrarToast('success', "Trabajador encontrado")
+        })
+        .catch(err => {
+            mostrarToast("error", err.message);
+        });
+}
